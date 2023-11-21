@@ -16,4 +16,9 @@ public class UserServiceImpl implements UserService{
     public Optional<User> postUser(User user) {
         return Optional.of(userRepository.save(user));
     }
+
+    @Override
+    public Optional<User> getUserWhereName(String userName) {
+        return Optional.of(userRepository.findByUserName(userName));
+    }
 }
