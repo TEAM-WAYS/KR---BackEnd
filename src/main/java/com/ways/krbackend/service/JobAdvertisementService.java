@@ -6,10 +6,10 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-public class JobAdvertisementService {
+public interface JobAdvertisementService {
 
 
-    public Optional<JobAdvertisement> createJobAdvertisement(JobAdvertisement jobAdvertisement) {
+     default Optional<JobAdvertisement> createJobAdvertisement(JobAdvertisement jobAdvertisement) {
 
         return Optional.of(jobAdvertisement);
     }
