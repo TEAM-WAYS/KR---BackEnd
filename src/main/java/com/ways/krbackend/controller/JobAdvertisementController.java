@@ -3,14 +3,12 @@ package com.ways.krbackend.conroller;
 import com.ways.krbackend.model.JobAdvertisement;
 import com.ways.krbackend.service.JobAdvertisementService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -30,4 +28,11 @@ public class JobAdvertisementController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to create job advertisement");
         }
     }
+
+    @GetMapping("/list")
+    public ResponseEntity<List<JobAdvertisement>> getAllJobAdvertisements() {
+        List<JobAdvertisement> jobAdvertisements = jobAdvertisementService.getAllJobAdvertisements();
+        return ResponseEntity.ok(jobAdvertisements);
+    }
 }
+
