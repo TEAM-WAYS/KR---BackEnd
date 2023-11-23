@@ -1,4 +1,4 @@
-package com.ways.krbackend.conroller;
+package com.ways.krbackend.controller;
 
 import com.ways.krbackend.model.User;
 import com.ways.krbackend.service.UserService;
@@ -6,14 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
 @RestController
+@CrossOrigin
 public class UserController {
     @Autowired
     UserService userService;
@@ -21,12 +19,12 @@ public class UserController {
     @Autowired
     PasswordEncoder passwordEncoder;
 
-    @PostMapping("/user")
+    @PostMapping("/new-user")
     public ResponseEntity<?> postUser(@RequestBody User user){
-        Optional<User> response = userService.postUser(user);
-        try {
-        user.setPwd(passwordEncoder.encode(user.getPwd()));
 
+        try {
+            user.setPwd(passwordEncoder.encode(user.getPwd()));
+            Optional<User> response = userService.postUser(user);
             if (response.isPresent()) {
             return ResponseEntity.status(HttpStatus.OK).body("new user applied");
             } else {

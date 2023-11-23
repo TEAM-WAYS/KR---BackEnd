@@ -7,7 +7,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-@Configuration
+//---- IKKE I BRUG
 public class SecurityConfig {
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
@@ -16,7 +16,7 @@ public class SecurityConfig {
                     requests.requestMatchers("/user").authenticated()
                     //requests.requestMatchers("/myAccount").hasRole("ADMIN")
                             //.requestMatchers("/myBalance").hasRole("ADMIN,SALES")
-                            .requestMatchers("/application").permitAll();
+                            .requestMatchers("/new-user").permitAll();
                 })
 
                 .formLogin(Customizer.withDefaults())

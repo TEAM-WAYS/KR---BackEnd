@@ -1,4 +1,4 @@
-package com.ways.krbackend.conroller;
+package com.ways.krbackend.controller;
 
 import com.ways.krbackend.model.Application;
 import com.ways.krbackend.service.ApplicasionService;
