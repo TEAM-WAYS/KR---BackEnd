@@ -10,7 +10,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
 public class EmailController {
@@ -44,11 +47,14 @@ public class EmailController {
         }
     }
     @GetMapping("/emails/content/{id}")
-    public ResponseEntity<String> getContentById(@PathVariable Long id) {
-        String content = emailService.getContentById(id);
+    public ResponseEntity<Object> getContentById(@PathVariable Long id) {
+        Optional<email> content = emailService.getContentById(id);
 
         if (content != null) {
-            return new ResponseEntity<>(content, HttpStatus.OK);
+            // Wrap the content in a JSON object
+            Map<String, Optional<email>> response = new HashMap<>();
+            response.put("content", content);
+            return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

@@ -8,4 +8,6 @@ import java.util.Optional;
 public interface emailRepository extends JpaRepository<email, Long> {
 
     Optional<email> findBySubject(String subject);
+
+    String getContentById(Long id);
 }
