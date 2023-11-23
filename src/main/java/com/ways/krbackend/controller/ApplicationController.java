@@ -1,4 +1,4 @@
-package com.ways.krbackend.conroller;
+package com.ways.krbackend.controller;
 
 import com.ways.krbackend.model.Application;
 import com.ways.krbackend.service.ApplicasionService;
@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Optional;
 
 @RestController
-@CrossOrigin
 public class ApplicationController {
 
     @Autowired

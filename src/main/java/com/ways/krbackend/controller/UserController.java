@@ -1,4 +1,4 @@
-package com.ways.krbackend.conroller;
+package com.ways.krbackend.controller;
 
 import com.ways.krbackend.model.User;
 import com.ways.krbackend.service.UserService;
@@ -12,14 +12,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
-
+/*
 @RestController
 public class UserController {
+
     @Autowired
     UserService userService;
 
     @Autowired
     PasswordEncoder passwordEncoder;
+
 
     @PostMapping("/user")
     public ResponseEntity<?> postUser(@RequestBody User user){
@@ -59,3 +61,6 @@ public class UserController {
     }
 }
 
+
+
+ */
