@@ -9,10 +9,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.mail.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Properties;
+import java.util.*;
 import javax.mail.search.SearchTerm;
 import javax.mail.search.SubjectTerm;
 
@@ -41,7 +38,7 @@ public class EmailServiceImpl implements EmailService {
     public List<email> getEmails() {
         return emailRepository.findAll();
     }
-    @Scheduled(fixedRate = 1000000)
+    @Scheduled(fixedRate = 2000000)
     public void autoSyncEmails() {
         syncEmails();
     }
@@ -173,12 +170,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public String getContentById(Long id) {
-        Optional<email> optionalEmail = emailRepository.findById(id);
-        if (optionalEmail.isPresent()) {
-            return optionalEmail.get().getContent();
-        } else {
-            return null;
-        }
+    public Optional<email> getContentById(Long id) {
+        return emailRepository.findById(id);
     }
 }
