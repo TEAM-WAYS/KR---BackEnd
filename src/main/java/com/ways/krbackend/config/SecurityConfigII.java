@@ -7,7 +7,9 @@ import com.ways.krbackend.filter.JWTTokenGeneratorFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -34,7 +36,7 @@ public class SecurityConfigII {
                         @Override
                         public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
                             CorsConfiguration config = new CorsConfiguration();
-                            config.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));
+                            config.setAllowedOrigins(Collections.singletonList("http://localhost:63342"));
                             config.setAllowedMethods(Collections.singletonList("*"));
                             config.setAllowCredentials(true);
                             config.setAllowedHeaders(Collections.singletonList("*"));
@@ -47,15 +49,17 @@ public class SecurityConfigII {
                             .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                     )
                     .addFilterAfter(new JWTTokenGeneratorFilter(), BasicAuthenticationFilter.class)
+                    .addFilterBefore(new JWTTokenGeneratorFilter(), BasicAuthenticationFilter.class)
 
 
                     .authorizeHttpRequests((requests)->requests
-                            .requestMatchers("/myAccount").hasRole("USER")
-                            .requestMatchers("/myBalance").hasAnyRole("USER","ADMIN")
-                            .requestMatchers("/myLoans").hasRole("USER")
-                            .requestMatchers("/myCards").hasRole("USER")
+                            //.requestMatchers("/myAccount").hasRole("USER")
+                            //.requestMatchers("/myBalance").hasAnyRole("USER","ADMIN")
+                            //.requestMatchers("/myLoans").hasRole("USER")
+                            //.requestMatchers("/myCards").hasRole("USER")
                             .requestMatchers("/user").authenticated()
-                            .requestMatchers("/new-user").permitAll()
+                            .requestMatchers("/new-user","/login-user").permitAll()
+
                     )
                     .formLogin(Customizer.withDefaults())
                     .httpBasic(Customizer.withDefaults());
@@ -65,6 +69,11 @@ public class SecurityConfigII {
         @Bean
         public PasswordEncoder passwordEncoder() {
             return new BCryptPasswordEncoder();
+        }
+
+        @Bean
+        public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+            return config.getAuthenticationManager();
         }
 
 

@@ -5,6 +5,10 @@ import com.ways.krbackend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,6 +21,9 @@ public class UserController {
 
     @Autowired
     PasswordEncoder passwordEncoder;
+
+    @Autowired
+    AuthenticationManager authenticationManager;
 
     @PostMapping("/new-user")
     public ResponseEntity<?> postUser(@RequestBody User user){
@@ -33,7 +40,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("system error: "+ error);
         }
     }
-    @GetMapping("/user")
+    @PostMapping("/user")
     public ResponseEntity<?> getUser(@RequestBody User userR){
         String hashedPwdR = passwordEncoder.encode(userR.getPwd());
         ResponseEntity response = null;
@@ -54,5 +61,20 @@ public class UserController {
         }
         return response;
     }
+
+    @PostMapping("/login-user") public ResponseEntity<String> loginUser(@RequestBody User user) {
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUserName(), user.getPwd()));
+         if(authentication.isAuthenticated()){
+        //return JwtResponseDTO.builder()
+        //        .accessToken(jwtService.GenerateToken(authRequestDTO.getUsername()).build();
+               return ResponseEntity.status(HttpStatus.OK)
+                       .body("Du er logget på");
+         } else {
+         throw new UsernameNotFoundException("invalid user request..!!");
+         }
+    }
+
+
+
 }
 
