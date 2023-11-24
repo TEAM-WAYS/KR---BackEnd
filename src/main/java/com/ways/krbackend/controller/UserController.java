@@ -63,6 +63,7 @@ public class UserController {
     }
 
     @PostMapping("/login-user") public ResponseEntity<String> loginUser(@RequestBody User user) {
+        System.out.println(user);
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUserName(), user.getPwd()));
          if(authentication.isAuthenticated()){
         //return JwtResponseDTO.builder()
