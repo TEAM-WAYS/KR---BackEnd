@@ -9,7 +9,8 @@ import org.springframework.web.client.RestTemplate;
 public class RestConfig {
     @Bean
     public RestTemplate restTemplate(RestTemplateBuilder builder) {
-        System.out.println("builder en rest");
+        System.out.println("build a  rest");
+        System.out.println("builder a rest");
         return builder.build();
     }
 }
