@@ -9,10 +9,11 @@ import jakarta.persistence.Id;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int id;
-    String userName;
-    String pwd;
-    String role;
+    private int id;
+    private String userName;
+    private String pwd;
+    private String role;
+
 
     public int getId() {
         return id;
@@ -44,5 +45,15 @@ public class User {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    @Override
+    public String toString(){
+        return "User{" +
+                "id=" + id +
+                ", username'" + userName + '\'' +
+                ", pwd='" + pwd + '\'' +
+                ", role='" + role + '\'' +
+                '}';
     }
 }
