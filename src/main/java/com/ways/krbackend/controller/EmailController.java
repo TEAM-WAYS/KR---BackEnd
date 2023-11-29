@@ -1,25 +1,25 @@
 package com.ways.krbackend.controller;
 
+import com.ways.krbackend.DTO.ApplicationPoints;
+import com.ways.krbackend.model.Application;
 import com.ways.krbackend.model.email;
+import com.ways.krbackend.service.ChatGtpApiService;
 import com.ways.krbackend.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 public class EmailController {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private ChatGtpApiService chatGtpApiService;
 
     @GetMapping("/emails")
     public List<email> getEmails() {
@@ -58,5 +58,15 @@ public class EmailController {
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+
+    @GetMapping("/email/search")
+    public List<ApplicationPoints> searchByInquiry( @RequestParam String inquiry){
+        Optional<LinkedList<ApplicationPoints>> applicationPointsList = chatGtpApiService.validateApplications(inquiry);
+        if(applicationPointsList!=null){
+            return applicationPointsList.get();
+        }
+        return null;
+
     }
 }
