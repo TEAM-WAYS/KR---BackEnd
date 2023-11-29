@@ -1,7 +1,7 @@
 package com.ways.krbackend.controller;
 
 import com.ways.krbackend.model.User;
-import com.ways.krbackend.service.UserService;
+import com.ways.krbackend.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +17,7 @@ import java.util.Optional;
 @RestController
 public class UserController {
     @Autowired
-    UserService userService;
+    UserServiceImpl userService;
 
     @Autowired
     PasswordEncoder passwordEncoder;
@@ -40,6 +40,9 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("system error: "+ error);
         }
     }
+    /*
+    har ingen idé hvad dette får ud på
+
     @PostMapping("/user")
     public ResponseEntity<?> getUser(@RequestBody User userR){
         String hashedPwdR = passwordEncoder.encode(userR.getPwd());
@@ -62,20 +65,17 @@ public class UserController {
         return response;
     }
 
+     */
+
     @PostMapping("/login-user") public ResponseEntity<String> loginUser(@RequestBody User user) {
         System.out.println(user);
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUserName(), user.getPwd()));
          if(authentication.isAuthenticated()){
-        //return JwtResponseDTO.builder()
-        //        .accessToken(jwtService.GenerateToken(authRequestDTO.getUsername()).build();
                return ResponseEntity.status(HttpStatus.OK)
                        .body("Du er logget på");
          } else {
          throw new UsernameNotFoundException("invalid user request..!!");
          }
     }
-
-
-
 }
 
