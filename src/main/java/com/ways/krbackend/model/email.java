@@ -15,6 +15,17 @@ public class email {
     @Column(columnDefinition = "LONGTEXT")
     private String content;
 
+    public boolean isBanned() {
+        return banned;
+    }
+
+    public void setBanned(boolean banned) {
+        this.banned = banned;
+    }
+
+    private boolean banned;
+
+
     public String getSubject() {
         return subject;
     }

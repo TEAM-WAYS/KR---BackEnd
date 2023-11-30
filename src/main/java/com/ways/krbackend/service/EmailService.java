@@ -12,4 +12,6 @@ public interface EmailService {
     List<email> fetchEmailsFromRemote();
     email getEmailById(Long id);
     Optional<email> getContentById(Long id);
+
+    void markEmailAsBanned(Long id);
 }

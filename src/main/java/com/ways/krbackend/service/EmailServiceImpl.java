@@ -173,4 +173,14 @@ public class EmailServiceImpl implements EmailService {
     public Optional<email> getContentById(Long id) {
         return emailRepository.findById(id);
     }
+
+    @Override
+    public void markEmailAsBanned(Long id) {
+        Optional<email> optionalEmail = emailRepository.findById(id);
+        if (optionalEmail.isPresent()) {
+            email email = optionalEmail.get();
+            email.setBanned(true);
+            emailRepository.save(email);
+        }
+    }
 }
