@@ -4,12 +4,8 @@ import com.ways.krbackend.DTO.*;
 import com.ways.krbackend.model.Application;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.data.convert.ReadingConverter;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Service;
 
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.*;
@@ -18,12 +14,6 @@ import com.ways.krbackend.DTO.ChatRequest;
 import com.ways.krbackend.DTO.ChatResponse;
 import com.ways.krbackend.DTO.Choice;
 import com.ways.krbackend.DTO.Message;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,7 +71,7 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
         for (Application application : applications) {
             int points = 0;
             for (String word : wordList) {
-                if(application.getText().contains(word)){
+                if(application.getSummery().contains(word)){
                     points++;
                 }
             }
