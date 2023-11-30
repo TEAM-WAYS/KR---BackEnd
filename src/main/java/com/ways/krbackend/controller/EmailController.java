@@ -1,7 +1,6 @@
 package com.ways.krbackend.controller;
 
 import com.ways.krbackend.DTO.ApplicationPoints;
-import com.ways.krbackend.model.Application;
 import com.ways.krbackend.model.email;
 import com.ways.krbackend.service.ChatGtpApiService;
 import com.ways.krbackend.service.EmailService;
@@ -62,7 +61,7 @@ public class EmailController {
 
     @GetMapping("/email/search")
     public List<ApplicationPoints> searchByInquiry( @RequestParam String inquiry){
-        Optional<LinkedList<ApplicationPoints>> applicationPointsList = chatGtpApiService.validateApplications(inquiry);
+        Optional<LinkedList<ApplicationPoints>> applicationPointsList = chatGtpApiService.validateApplicationsQuiq(inquiry);
         if(applicationPointsList!=null){
             return applicationPointsList.get();
         }

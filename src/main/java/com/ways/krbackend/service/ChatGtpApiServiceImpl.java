@@ -2,6 +2,7 @@ package com.ways.krbackend.service;
 
 import com.ways.krbackend.DTO.*;
 import com.ways.krbackend.model.Application;
+import org.apache.tomcat.util.json.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -60,7 +61,7 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
     @Autowired
     private ApplicasionService applicasionService;
     @Override
-    public Optional<LinkedList<ApplicationPoints>> validateApplications(String inquiry) {
+    public Optional<LinkedList<ApplicationPoints>> validateApplicationsQuiq(String inquiry) {
         String message = "Give me 20 keyword from this inquiry: "+ inquiry+
                 ", to find in a resume of a suitable job candidate ";
         List<Choice> lst = chatWithGPT(message);
@@ -79,6 +80,27 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
         }
 
         applPointsList.sort(Comparator.comparing(ApplicationPoints::getPoints));
+        return Optional.of(applPointsList);
+    }
+
+    @Override
+    public Optional<LinkedList<ApplicationPoints>> validateApplicationsLong(String inquiry) {
+        String message = "Witch of the following candidates matches best to this inquiry: n/"+ inquiry+"n/ Candidates: n/";
+
+
+
+        LinkedList<ApplicationPointsII> applPointsList = new LinkedList<>() ;
+
+        List<Application> applications = applicasionService.getApplications();
+        for (Application application : applications) {
+            message +="applicationId: "+ application.getId() + ": /n" + application.getSummery() +"/n";
+        }
+        message += "Return me a list of JSON objects with the attributes applicationId, points, reason (short), for the ten best applications,ordered by points given  ";
+        List<Choice> lst = chatWithGPT(message);
+        List<ApplicationPointsII> applicationPointsIIList = (lst.get(0).getMessage().getContent())
+        applPointsList.add(new ApplicationPointsII(application.getId(),));
+
+        applPointsList.sort(Comparator.comparing(ApplicationPointsII::getPoints));
         return Optional.of(applPointsList);
     }
 }
