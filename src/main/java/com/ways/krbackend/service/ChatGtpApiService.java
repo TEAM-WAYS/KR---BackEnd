@@ -7,4 +7,6 @@ import java.util.Optional;
 
 public interface ChatGtpApiService {
     Optional<LinkedList<ApplicationPoints>> validateApplicationsQuiq(String inquiry);
+
+    Optional<LinkedList<ApplicationPoints>> validateApplicationsLong(String inquiry);
 }

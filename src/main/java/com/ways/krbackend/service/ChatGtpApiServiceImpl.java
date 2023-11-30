@@ -1,12 +1,15 @@
 package com.ways.krbackend.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.ways.krbackend.DTO.*;
 import com.ways.krbackend.model.Application;
-import org.apache.tomcat.util.json.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 
+import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.*;
@@ -18,6 +21,13 @@ import com.ways.krbackend.DTO.Message;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static aj.org.objectweb.asm.Type.getType;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+@Component
 public class ChatGtpApiServiceImpl implements ChatGtpApiService{
     @Value("${spring.ai.bearer}")
     private String gtpApiKey;
@@ -84,7 +94,7 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
     }
 
     @Override
-    public Optional<LinkedList<ApplicationPoints>> validateApplicationsLong(String inquiry) {
+    public Optional<List<ApplicationPointsII>> validateApplicationsLong(String inquiry) {
         String message = "Witch of the following candidates matches best to this inquiry: n/"+ inquiry+"n/ Candidates: n/";
 
 
@@ -97,10 +107,10 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
         }
         message += "Return me a list of JSON objects with the attributes applicationId, points, reason (short), for the ten best applications,ordered by points given  ";
         List<Choice> lst = chatWithGPT(message);
-        List<ApplicationPointsII> applicationPointsIIList = (lst.get(0).getMessage().getContent())
-        applPointsList.add(new ApplicationPointsII(application.getId(),));
+        Gson gson = new Gson();
+        List<ApplicationPointsII> applicationPointsIIList = gson.fromJson(lst.get(0).getMessage().getContent(),new TypeToken<List<ApplicationPointsII>>()->{}.getType());
 
-        applPointsList.sort(Comparator.comparing(ApplicationPointsII::getPoints));
-        return Optional.of(applPointsList);
+        //applPointsList.sort(Comparator.comparing(ApplicationPointsII::getPoints));
+        return Optional.of(applicationPointsIIList);
     }
 }
