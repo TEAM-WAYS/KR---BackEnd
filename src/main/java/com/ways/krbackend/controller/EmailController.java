@@ -61,7 +61,7 @@ public class EmailController {
 
     @GetMapping("/email/search")
     public List<ApplicationPoints> searchByInquiry( @RequestParam String inquiry){
-        Optional<LinkedList<ApplicationPoints>> applicationPointsList = chatGtpApiService.validateApplicationsQuiq(inquiry);
+        Optional<LinkedList<ApplicationPoints>> applicationPointsList = chatGtpApiService.validateApplicationsQuick(inquiry);
         if(applicationPointsList!=null){
             return applicationPointsList.get();
         }

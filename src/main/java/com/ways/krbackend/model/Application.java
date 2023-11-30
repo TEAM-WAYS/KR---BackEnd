@@ -10,9 +10,9 @@ public class Application {
     private String name;
     private String summery;
     private int age;
-    private int phoneNumber;
-    private String professionTitle;
-    private String diploma;
+    private int phone;
+    private String profession;
+    private String title;
 
 
     public int getId() {
@@ -47,27 +47,27 @@ public class Application {
         this.age = age;
     }
 
-    public int getPhoneNumber() {
-        return phoneNumber;
+    public int getPhone() {
+        return phone;
     }
 
-    public void setPhoneNumber(int phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    public void setPhone(int phoneNumber) {
+        this.phone = phoneNumber;
     }
 
-    public String getProfessionTitle() {
-        return professionTitle;
+    public String getProfession() {
+        return profession;
     }
 
-    public void setProfessionTitle(String professionTitle) {
-        this.professionTitle = professionTitle;
+    public void setProfession(String professionTitle) {
+        this.profession = professionTitle;
     }
 
-    public String getDiploma() {
-        return diploma;
+    public String getTitle() {
+        return title;
     }
 
-    public void setDiploma(String diploma) {
-        this.diploma = diploma;
+    public void setTitle(String title) {
+        this.title = title;
     }
 }

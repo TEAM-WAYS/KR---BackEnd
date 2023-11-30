@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.ways.krbackend.DTO.*;
 import com.ways.krbackend.model.Application;
+import com.ways.krbackend.model.email;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -23,9 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static aj.org.objectweb.asm.Type.getType;
-
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 @Component
 public class ChatGtpApiServiceImpl implements ChatGtpApiService{
@@ -71,7 +69,7 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
     @Autowired
     private ApplicasionService applicasionService;
     @Override
-    public Optional<LinkedList<ApplicationPoints>> validateApplicationsQuiq(String inquiry) {
+    public Optional<LinkedList<ApplicationPoints>> validateApplicationsQuick(String inquiry) {
         String message = "Give me 20 keyword from this inquiry: "+ inquiry+
                 ", to find in a resume of a suitable job candidate ";
         List<Choice> lst = chatWithGPT(message);
@@ -105,12 +103,50 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
         for (Application application : applications) {
             message +="applicationId: "+ application.getId() + ": /n" + application.getSummery() +"/n";
         }
-        message += "Return me a list of JSON objects with the attributes applicationId, points, reason (short), for the ten best applications,ordered by points given  ";
+        message += "Return me a list of JSON objects with the attributes applicationId, points, reason (short), " +
+                "for the ten best applications,ordered by points given  ";
         List<Choice> lst = chatWithGPT(message);
-        Gson gson = new Gson();
-        List<ApplicationPointsII> applicationPointsIIList = gson.fromJson(lst.get(0).getMessage().getContent(),new TypeToken<List<ApplicationPointsII>>()->{}.getType());
+        ObjectMapper objectMapper = new ObjectMapper();
 
-        //applPointsList.sort(Comparator.comparing(ApplicationPointsII::getPoints));
-        return Optional.of(applicationPointsIIList);
+        try{
+            List<ApplicationPointsII> applicationPointsIIList = objectMapper.readValue(lst.get(0).getMessage().getContent(), new TypeReference<List<ApplicationPointsII>>() {
+            });
+            return Optional.of(applicationPointsIIList);
+        }catch (Exception e){
+            return Optional.empty();
+        }
+
     }
+
+    @Override
+    public Optional<Application> applicationFromEmail(email email){
+        String message = "Analyse this job application: /n"+email.getContent()+" /n " +
+                "Give me the name the following: /n" +
+                "1. Name of applicant/n" +
+                "2. Age of applicant/n" +
+                "3. Profession/n" +
+                "4. Title/n" +
+                "5. Phone number/n"+
+                "6. A short summery of the applicants best qualities./n" +
+                "Return as a Json object with the attributes: 'name', 'age', 'profession', 'title', 'phone', 'summery'";
+        List<Choice> lst = chatWithGPT(message);
+        ObjectMapper objectMapper= new ObjectMapper();
+
+        try{
+            Application application= objectMapper.readValue(lst.get(0).getMessage().getContent(), new TypeReference<Application>() {
+            });
+
+            return Optional.of(application);
+        }catch (Exception e){
+            return Optional.empty();
+        }
+
+
+
+
+
+    }
+
+
+
 }
