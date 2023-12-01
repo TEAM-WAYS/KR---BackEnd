@@ -6,21 +6,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 
-@Service
-public class CandidateService {
+public interface CandidateService {
 
-    @Autowired
-    private CandidateRepository candidateRepository;
+    List<Candidate> getAllCandidates();
 
-    public List<Candidate> getAllCandidates() {
-        return candidateRepository.findAll();
-    }
+    Optional<Candidate> getCandidateById(Long candidateId);
 
-    public void saveCandidate(Candidate candidate) {
-        candidateRepository.save(candidate);
-    }
+    List<Candidate> getFavoriteCandidates();
+
+    void addToFavorites(Long candidateId);
+
+    Optional<Candidate> findById(Long id);
+
+    void save(Candidate candidate);
 }
-
-
