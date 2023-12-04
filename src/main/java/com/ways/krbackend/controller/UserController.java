@@ -1,34 +1,36 @@
 package com.ways.krbackend.controller;
 
 import com.ways.krbackend.model.User;
-import com.ways.krbackend.service.UserService;
+import com.ways.krbackend.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
-/*
+
 @RestController
 public class UserController {
-
     @Autowired
-    UserService userService;
+    UserServiceImpl userService;
 
     @Autowired
     PasswordEncoder passwordEncoder;
 
+    @Autowired
+    AuthenticationManager authenticationManager;
 
-    @PostMapping("/user")
+    @PostMapping("/new-user")
     public ResponseEntity<?> postUser(@RequestBody User user){
-        Optional<User> response = userService.postUser(user);
-        try {
-        user.setPwd(passwordEncoder.encode(user.getPwd()));
 
+        try {
+            user.setPwd(passwordEncoder.encode(user.getPwd()));
+            Optional<User> response = userService.postUser(user);
             if (response.isPresent()) {
             return ResponseEntity.status(HttpStatus.OK).body("new user applied");
             } else {
@@ -38,7 +40,10 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("system error: "+ error);
         }
     }
-    @GetMapping("/user")
+    /*
+    har ingen idé hvad dette får ud på
+
+    @PostMapping("/user")
     public ResponseEntity<?> getUser(@RequestBody User userR){
         String hashedPwdR = passwordEncoder.encode(userR.getPwd());
         ResponseEntity response = null;
@@ -59,8 +64,18 @@ public class UserController {
         }
         return response;
     }
+
+     */
+
+    @PostMapping("/login-user") public ResponseEntity<String> loginUser(@RequestBody User user) {
+        System.out.println(user);
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUserName(), user.getPwd()));
+         if(authentication.isAuthenticated()){
+               return ResponseEntity.status(HttpStatus.OK)
+                       .body("Du er logget på");
+         } else {
+         throw new UsernameNotFoundException("invalid user request..!!");
+         }
+    }
 }
 
-
-
- */
