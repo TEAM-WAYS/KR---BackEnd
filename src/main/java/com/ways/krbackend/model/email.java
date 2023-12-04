@@ -14,7 +14,16 @@ public class email {
     private Date sentDate;
     @Column(columnDefinition = "LONGTEXT")
     private String content;
+    @Column(name = "attachments", columnDefinition = "BLOB")
+    private byte[] attachments;
 
+    public byte[] getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(byte[] attachments) {
+        this.attachments = attachments;
+    }
     public String getSubject() {
         return subject;
     }
