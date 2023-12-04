@@ -1,11 +1,7 @@
 package com.ways.krbackend.config;
 
-
-import com.ways.krbackend.filter.JWTTokenGeneratorFilter;
-
-
+import com.ways.krbackend.filter.JWTTokenValidatorFilter;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,15 +18,10 @@ import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
-
-import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collections;
 @Configuration
 public class SecurityConfig {
-
-    @Autowired
-    private DataSource dataSource;
 
         @Bean
         SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
@@ -49,20 +40,15 @@ public class SecurityConfig {
                             config.setMaxAge(3600L);
                             return config;
                         }
-                    })).csrf((csrf) -> csrf.csrfTokenRequestHandler(requestHandler)
-                            .ignoringRequestMatchers("/new-user", "/login-user")
-                            .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                    )
-                    .addFilterAfter(new JWTTokenGeneratorFilter(), BasicAuthenticationFilter.class)
-                    .addFilterBefore(new JWTTokenGeneratorFilter(), BasicAuthenticationFilter.class)
-
-
+                    })).csrf((csrf) -> csrf.csrfTokenRequestHandler(requestHandler).ignoringRequestMatchers("/new-user","/login-user")
+                            .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
+                    //.addFilterAfter(new JWTTokenGeneratorFilter(), BasicAuthenticationFilter.class)
+                    //shit does not work
+                    .addFilterBefore(new JWTTokenValidatorFilter(), BasicAuthenticationFilter.class)
                     .authorizeHttpRequests((requests)->requests
-                            //.requestMatchers("/myAccount").hasRole("USER")
-                            //.requestMatchers("/myBalance").hasAnyRole("USER","ADMIN")
-                            //.requestMatchers("/myLoans").hasRole("USER")
-                            //.requestMatchers("/myCards").hasRole("USER")
-                            .requestMatchers("/user").authenticated()
+                            //add to whitelist for authenticated sites
+                            .requestMatchers("/emails/**").authenticated()
+                            .requestMatchers("/emails").authenticated()
                             .requestMatchers("/new-user","/login-user").permitAll()
 
                     )

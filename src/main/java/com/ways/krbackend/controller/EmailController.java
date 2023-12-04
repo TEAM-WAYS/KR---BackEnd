@@ -51,7 +51,6 @@ public class EmailController {
         Optional<email> content = emailService.getContentById(id);
 
         if (content != null) {
-            // Wrap the content in a JSON object
             Map<String, Optional<email>> response = new HashMap<>();
             response.put("content", content);
             return new ResponseEntity<>(response, HttpStatus.OK);

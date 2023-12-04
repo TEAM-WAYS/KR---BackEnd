@@ -1,6 +1,8 @@
 package com.ways.krbackend.controller;
 
-import com.ways.krbackend.model.User;
+import com.ways.krbackend.DTO.ApiResponse;
+import com.ways.krbackend.model.Manager;
+import com.ways.krbackend.service.JwtTokenService;
 import com.ways.krbackend.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,57 +27,33 @@ public class UserController {
     @Autowired
     AuthenticationManager authenticationManager;
 
+    @Autowired
+    private JwtTokenService jwtTokenService;
+
     @PostMapping("/new-user")
-    public ResponseEntity<?> postUser(@RequestBody User user){
+    public ResponseEntity<?> postUser(@RequestBody Manager manager){
 
         try {
-            user.setPwd(passwordEncoder.encode(user.getPwd()));
-            Optional<User> response = userService.postUser(user);
+            manager.setPwd(passwordEncoder.encode(manager.getPwd()));
+            Optional<Manager> response = userService.postUser(manager);
             if (response.isPresent()) {
-            return ResponseEntity.status(HttpStatus.OK).body("new user applied");
+            return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("new user applied"));
             } else {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("connection error, try again");
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(new ApiResponse("connection error, try again"));
             }
         }catch (Exception error){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("system error: "+ error);
         }
     }
-    /*
-    har ingen idé hvad dette får ud på
-
-    @PostMapping("/user")
-    public ResponseEntity<?> getUser(@RequestBody User userR){
-        String hashedPwdR = passwordEncoder.encode(userR.getPwd());
-        ResponseEntity response = null;
-        try {
-            Optional<User> optional = userService.getUserWhereName(userR.getUserName());
-            if (optional.isPresent()) {
-                String hashedPwdF = optional.get().getPwd();
-                if(hashedPwdF.equals(hashedPwdR)){
-                    response = ResponseEntity.status(HttpStatus.ACCEPTED).body("");
-                }else {
-                    response = ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("wrong username or password");
-                }
-            } else {
-                response = ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("wrong username or password");
-            }
-        }catch (Exception error){
-            response =ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("error: "+ error);
-        }
-        return response;
-    }
-
-     */
-
-    @PostMapping("/login-user") public ResponseEntity<String> loginUser(@RequestBody User user) {
-        System.out.println(user);
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUserName(), user.getPwd()));
+    @PostMapping("/login-user") public ResponseEntity<String> login(@RequestBody Manager manager) {
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(manager.getUserName(), manager.getPwd()));
          if(authentication.isAuthenticated()){
+             String jwtToken = jwtTokenService.generateJwtToken(authentication);
                return ResponseEntity.status(HttpStatus.OK)
+                       .header("Authorization", "Bearer " + jwtToken)
                        .body("Du er logget på");
          } else {
          throw new UsernameNotFoundException("invalid user request..!!");
          }
     }
 }
-
