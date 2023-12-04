@@ -4,7 +4,6 @@ import com.ways.krbackend.model.email;
 import com.ways.krbackend.repository.emailRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -35,10 +34,33 @@ public class EmailServiceImpl implements EmailService {
     public List<email> getEmails() {
         return emailRepository.findAll();
     }
+
+    @Override
+    public void markEmailAsForbidden(Long emailId) {
+        try {
+            Optional<email> optionalEmail = emailRepository.findById(emailId);
+            optionalEmail.ifPresent(email -> {
+                email.setForbidden(true);
+                emailRepository.save(email);
+
+                // Marker alle emails af samme fromAddress som forbidden
+                List<email> emailsWithSameFromAddress = emailRepository.findByFromAddress(email.getFromAddress());
+                emailsWithSameFromAddress.forEach(e -> {
+                    e.setForbidden(true);
+                    emailRepository.save(e);
+                });
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error marking email as forbidden: " + e.getMessage());
+        }
+    }
+
     @Scheduled(fixedRate = 2000000)
     public void autoSyncEmails() {
         syncEmails();
     }
+
     @Override
     public void syncEmails() {
         try {

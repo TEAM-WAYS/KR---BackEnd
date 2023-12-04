@@ -15,6 +15,19 @@ public class email {
     @Column(columnDefinition = "LONGTEXT")
     private String content;
 
+    public boolean isForbidden() {
+        return forbidden;
+    }
+
+    public void setForbidden(boolean forbidden) {
+        this.forbidden = forbidden;
+    }
+
+    @Column(columnDefinition = "TINYINT(1)")
+    private boolean forbidden;
+
+
+
     public String getSubject() {
         return subject;
     }

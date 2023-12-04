@@ -7,6 +7,9 @@ import java.util.Optional;
 
 public interface EmailService {
     List<email> getEmails();
+
+    void markEmailAsForbidden(Long emailId);
+
     void syncEmails();
     void deleteEmail(Long id);
     List<email> fetchEmailsFromRemote();

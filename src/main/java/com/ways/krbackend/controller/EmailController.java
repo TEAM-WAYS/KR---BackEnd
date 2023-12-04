@@ -20,9 +20,21 @@ public class EmailController {
     @Autowired
     private ChatGtpApiService chatGtpApiService;
 
-    @GetMapping("/emails")
+        @GetMapping("/emails")
     public List<email> getEmails() {
         return emailService.getEmails();
+    }
+
+    @PostMapping("/emails/forbid")
+    public ResponseEntity<String> markEmailAsForbidden(@RequestBody Map<String, Long> payload) {
+        try {
+            Long emailId = payload.get("emailId");
+            emailService.markEmailAsForbidden(emailId);
+            return new ResponseEntity<>("Email marked as forbidden.", HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("Failed to mark email as forbidden.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping("/emails/sync")
