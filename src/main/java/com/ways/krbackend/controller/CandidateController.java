@@ -2,11 +2,9 @@ package com.ways.krbackend.controller;
 import com.ways.krbackend.service.CandidateService;
 import com.ways.krbackend.model.Candidate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,9 +27,16 @@ import java.util.List;
             model.addAttribute("candidates", new ArrayList<>());
             return "list-candidates";
         }
-        @GetMapping("/favorite")
-        public String showFavoriteCandidates(Model model, Object favoriteCandidates) {
-            model.addAttribute("favoriteCandidates", favoriteCandidates);
-            return "list-candidates";
+        @GetMapping("/favorites")
+        public ResponseEntity<List<Candidate>> getFavoriteCandidates() {
+            List<Candidate> favoriteCandidates = candidateService.getFavoriteCandidates();
+            return ResponseEntity.ok(favoriteCandidates);
+        }
+
+        @PostMapping("/{candidateId}/add-to-favorites")
+        public ResponseEntity<String> addToFavorites(@PathVariable Long candidateId) {
+            candidateService.addToFavorites(candidateId);
+            return ResponseEntity.ok("Candidate added to favorites successfully.");
         }
     }
+

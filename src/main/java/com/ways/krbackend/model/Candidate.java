@@ -14,6 +14,7 @@ public class Candidate {
         private String email;
         private String phone;
         private String resumeUrl;
+        private boolean isFavorite;
 
     @Override
     public String toString() {
@@ -66,6 +67,14 @@ public class Candidate {
         this.resumeUrl = resumeUrl;
     }
 
+    public boolean isFavorite() {
+        return isFavorite;
     }
+
+    public void setFavorite(boolean favorite) {
+        isFavorite = favorite;
+    }
+    }
+
 
 
