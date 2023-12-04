@@ -1,20 +1,21 @@
 package com.ways.krbackend.service;
 
-import com.ways.krbackend.model.User;
+import com.ways.krbackend.model.Manager;
 import com.ways.krbackend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Component
+@Service
 public class UserServiceImpl implements UserDetailsService {
     @Autowired
     UserRepository userRepository;
@@ -23,7 +24,7 @@ public class UserServiceImpl implements UserDetailsService {
         System.out.println("loadUser kaldt: user=" + username);
         String userName, password = null;
         List<GrantedAuthority> authorities = null;
-        Optional<User> user = null;
+        Optional<Manager> user = null;
         try {
             user = userRepository.findByUserName(username);
         } catch (Exception ex) {
@@ -37,10 +38,10 @@ public class UserServiceImpl implements UserDetailsService {
         } else {
             throw new UsernameNotFoundException("User details not found for the user:" + username);
         }
-        return new org.springframework.security.core.userdetails.User(username,password,authorities);
+        return new User(username,password,authorities);
     }
 
-    public Optional<User> postUser(User user) {
-        return Optional.of(userRepository.save(user));
+    public Optional<Manager> postUser(Manager manager) {
+        return Optional.of(userRepository.save(manager));
     }
 }
