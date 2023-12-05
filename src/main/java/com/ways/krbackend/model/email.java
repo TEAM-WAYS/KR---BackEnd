@@ -14,6 +14,8 @@ public class email {
     private Date sentDate;
     @Column(columnDefinition = "LONGTEXT")
     private String content;
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "email")
+    private Application application;
 
     public String getSubject() {
         return subject;
@@ -53,5 +55,13 @@ public class email {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public Application getApplication() {
+        return application;
+    }
+
+    public void setApplication(Application application) {
+        this.application = application;
     }
 }

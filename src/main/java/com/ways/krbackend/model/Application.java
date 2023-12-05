@@ -2,6 +2,8 @@ package com.ways.krbackend.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 
 @Entity
 public class Application {
@@ -13,6 +15,9 @@ public class Application {
     private int phone;
     private String profession;
     private String title;
+    @OneToOne
+    @JoinColumn(name="application", referencedColumnName = "id")
+    email email;
 
 
     public int getId() {
@@ -69,5 +74,13 @@ public class Application {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public com.ways.krbackend.model.email getEmail() {
+        return email;
+    }
+
+    public void setEmail(com.ways.krbackend.model.email email) {
+        this.email = email;
     }
 }

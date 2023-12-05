@@ -3,6 +3,7 @@ package com.ways.krbackend.service;
 import com.ways.krbackend.model.Application;
 import com.ways.krbackend.repository.ApplicationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;

@@ -59,16 +59,17 @@ public class EmailController {
         }
     }
 
-    @GetMapping("/email/transform") // TODO: metode skal tage alle nye email
-    public ResponseEntity<Object> turnEmailIntoApplication(email email){
+    @GetMapping("/emails/transform") // TODO: metode skal tage alle nye email
+    public ResponseEntity<Object> turnEmailIntoApplication(){
         System.out.println("--endpoint email/transform running--");
-        Optional<Application> response = chatGtpApiService.applicationFromEmail(email);
-        if(response != null){
+        ResponseEntity<Object> response = chatGtpApiService.turnEmailIntoApplication();
+        if(response.equals(HttpStatus.OK) ){
             System.out.println("--endpoint email/transform success--");
             return new ResponseEntity<>(HttpStatus.OK);
         }else {
             return  new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
         }
+
     }
 
 

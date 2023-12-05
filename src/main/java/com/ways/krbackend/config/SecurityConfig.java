@@ -33,6 +33,7 @@ public class SecurityConfig {
                         public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
                             CorsConfiguration config = new CorsConfiguration();
                             config.setAllowedOrigins(Collections.singletonList("http://localhost:63342"));
+                            config.setAllowedOrigins(Collections.singletonList("https://api.openai.com/v1/chat/completions"));
                             config.setAllowedMethods(Collections.singletonList("*"));
                             config.setAllowCredentials(true);
                             config.setAllowedHeaders(Collections.singletonList("*"));
@@ -49,8 +50,9 @@ public class SecurityConfig {
                             //add to whitelist for authenticated sites
                             .requestMatchers("/emails/**").authenticated()
                             .requestMatchers("/emails").authenticated()
-                            .requestMatchers("/application/**").authenticated()
+                            .requestMatchers("/application/search").authenticated()
                             .requestMatchers("/application").authenticated()
+                            .requestMatchers("https://api.openai.com/v1/chat/completions").authenticated()
 
 
                             .requestMatchers("/new-user","/login-user").permitAll()

@@ -8,8 +8,10 @@ import com.ways.krbackend.model.Application;
 import com.ways.krbackend.model.email;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -31,6 +33,12 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
     private String gtpApiKey;
     /*@Value("${spring.ai.bearer}")
     private String bearer;*/
+
+    @Autowired
+    private EmailService emailService;
+
+    @Autowired
+    private ApplicasionService applicasionService;
 
     private final WebClient webClient;
 
@@ -66,8 +74,7 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
         return lst;
     }
 
-    @Autowired
-    private ApplicasionService applicasionService;
+
     @Override
     public List<Application> validateApplicationsQuick(String inquiry, int noOfApplications) {
         String message = "Give me 20 keyword from this inquiry: "+ inquiry+
@@ -143,6 +150,8 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
 
     @Override
     public Optional<Application> applicationFromEmail(email email){
+
+
         String message = "Analyse this job application: /n"+email.getContent()+" /n " +
                 "Give me the name the following: /n" +
                 "1. Name of applicant/n" +
@@ -164,9 +173,22 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
             return Optional.empty();
         }
 
+    }
 
+    @Override
+    public ResponseEntity<Object> turnEmailIntoApplication(){
+        System.out.println("--endpoint email/transform running--");
+        List<email> emails = emailService.getEmails();
+        for(email email: emails){
+            if(email.getApplication() == null) {
+                Optional<Application> response = applicationFromEmail(email);
+                if(response!= null) {
+                    applicasionService.postApplication(response.get());
+                }
+            }
+        }
 
-
+        return new ResponseEntity<>(HttpStatus.OK);
 
     }
 
