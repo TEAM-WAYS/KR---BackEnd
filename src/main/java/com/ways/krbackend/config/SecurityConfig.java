@@ -49,6 +49,10 @@ public class SecurityConfig {
                             //add to whitelist for authenticated sites
                             .requestMatchers("/emails/**").authenticated()
                             .requestMatchers("/emails").authenticated()
+                            .requestMatchers("/application/**").authenticated()
+                            .requestMatchers("/application").authenticated()
+
+
                             .requestMatchers("/new-user","/login-user").permitAll()
 
                     )
