@@ -1,6 +1,7 @@
 package com.ways.krbackend.controller;
 
 import com.ways.krbackend.DTO.ApplicationPoints;
+import com.ways.krbackend.model.Application;
 import com.ways.krbackend.model.email;
 import com.ways.krbackend.service.ChatGtpApiService;
 import com.ways.krbackend.service.EmailService;
@@ -58,13 +59,15 @@ public class EmailController {
         }
     }
 
-    @GetMapping("/email/search")
-    public List<ApplicationPoints> searchByInquiry( @RequestParam String inquiry){
-        Optional<LinkedList<ApplicationPoints>> applicationPointsList = chatGtpApiService.validateApplicationsQuick(inquiry);
-        if(applicationPointsList!=null){
-            return applicationPointsList.get();
+    @GetMapping("/email/transform") // TODO: metode skal tage alle nye email
+    public ResponseEntity<Object> turnEmailIntoApplication(email email){
+        Optional<Application> response = chatGtpApiService.applicationFromEmail(email);
+        if(response != null){
+            return new ResponseEntity<>(HttpStatus.OK);
+        }else {
+            return  new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
         }
-        return null;
-
     }
+
+
 }

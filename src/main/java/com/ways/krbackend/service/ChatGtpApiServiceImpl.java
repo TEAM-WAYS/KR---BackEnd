@@ -69,13 +69,15 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
     @Autowired
     private ApplicasionService applicasionService;
     @Override
-    public Optional<LinkedList<ApplicationPoints>> validateApplicationsQuick(String inquiry) {
+    public List<Application> validateApplicationsQuick(String inquiry, int noOfApplications) {
         String message = "Give me 20 keyword from this inquiry: "+ inquiry+
                 ", to find in a resume of a suitable job candidate ";
         List<Choice> lst = chatWithGPT(message);
 
         String[] wordList = lst.get(0).getMessage().toString().split(" ");
-        LinkedList<ApplicationPoints> applPointsList = new LinkedList<>() ;
+        List<ApplicationPoints> applPointsList = new ArrayList<>() ;
+
+
         List<Application> applications = applicasionService.getApplications();
         for (Application application : applications) {
             int points = 0;
@@ -86,31 +88,52 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
             }
             applPointsList.add(new ApplicationPoints(application,points));
         }
-
         applPointsList.sort(Comparator.comparing(ApplicationPoints::getPoints));
-        return Optional.of(applPointsList);
+        List<Application> apHighscore = new ArrayList<>();
+        int i = 1;
+        for(ApplicationPoints ap:applPointsList){
+            apHighscore.add(ap.getApplication());
+            if(i>noOfApplications){
+                break;
+            }
+            i++;
+        }
+        return apHighscore;
     }
 
     @Override
-    public Optional<List<ApplicationPointsII>> validateApplicationsLong(String inquiry) {
+    public Optional<List<ApplicationPointsII>> validateApplicationsLong(String inquiry, int noOfApplications) {
         String message = "Witch of the following candidates matches best to this inquiry: n/"+ inquiry+"n/ Candidates: n/";
 
+        List<Application> applications = validateApplicationsQuick(inquiry,noOfApplications+5);
 
+        //List<Application> applications = applicasionService.getApplications();
 
-        LinkedList<ApplicationPointsII> applPointsList = new LinkedList<>() ;
-
-        List<Application> applications = applicasionService.getApplications();
         for (Application application : applications) {
             message +="applicationId: "+ application.getId() + ": /n" + application.getSummery() +"/n";
         }
         message += "Return me a list of JSON objects with the attributes applicationId, points, reason (short), " +
-                "for the ten best applications,ordered by points given  ";
+                "for the "+noOfApplications+" best applications,ordered by points given  ";
         List<Choice> lst = chatWithGPT(message);
         ObjectMapper objectMapper = new ObjectMapper();
 
         try{
             List<ApplicationPointsII> applicationPointsIIList = objectMapper.readValue(lst.get(0).getMessage().getContent(), new TypeReference<List<ApplicationPointsII>>() {
             });
+            /*for(ApplicationPointsII apII : applicationPointsIIList){
+                for(Application a : applications){
+                    if((a.getId())==(apII.getAppId())){
+                        apII.setApplication(a);
+                    }
+                }
+            }*/
+            applicationPointsIIList.forEach(apII -> {
+                applications.stream()
+                        .filter(a -> a.getId() == apII.getAppId())
+                        .findFirst()
+                        .ifPresent(apII::setApplication);
+            });
+
             return Optional.of(applicationPointsIIList);
         }catch (Exception e){
             return Optional.empty();
@@ -135,7 +158,7 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
         try{
             Application application= objectMapper.readValue(lst.get(0).getMessage().getContent(), new TypeReference<Application>() {
             });
-
+            applicasionService.postApplication(application);
             return Optional.of(application);
         }catch (Exception e){
             return Optional.empty();
