@@ -19,12 +19,12 @@ public interface CandidateService {
 
     void addToFavorites(Long candidateId);
 
-    Optional<Candidate> findById(Long id);
-
     void save(Candidate candidate);
 
     List<Candidate> getEmployeeCandidates();
     List<Candidate> getEmployeesWithHiredDate();
 
     void moveCandidateToEmployee(Long candidateId);
+    void deleteCandidate(Long candidateId);
+
 }
