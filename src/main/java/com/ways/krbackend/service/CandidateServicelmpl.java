@@ -5,6 +5,7 @@ import com.ways.krbackend.repository.CandidateRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,6 +45,27 @@ public class CandidateServicelmpl implements CandidateService {
         public void save(Candidate candidate) {
 
     }
+        @Override
+        public List<Candidate> getEmployeeCandidates() {
+        return candidateRepository.findByIsEmployeeTrue();
+    }
+
+        @Override
+        public List<Candidate> getEmployeesWithHiredDate() {
+        return candidateRepository.findByHiredDateNotNull();
+    }
+
+        @Override
+        public void moveCandidateToEmployee(Long candidateId) {
+        Optional<Candidate> optionalCandidate = candidateRepository.findById(candidateId);
+
+        optionalCandidate.ifPresent(candidate -> {
+            candidate.setIsEmployee(true);
+            candidate.setHiredDate(LocalDate.now()); // We assume the hired date is same as the date the user is moving the candidate to employee list.
+            candidateRepository.save(candidate);
+        });
+    }
 }
+
 
 

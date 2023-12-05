@@ -38,5 +38,17 @@ import java.util.List;
             candidateService.addToFavorites(candidateId);
             return ResponseEntity.ok("Candidate added to favorites successfully.");
         }
+        @GetMapping("/employees")
+        public ResponseEntity<List<Candidate>> getEmployeeCandidates() {
+            List<Candidate> employeeCandidates = candidateService.getEmployeeCandidates();
+            return ResponseEntity.ok(employeeCandidates);
+        }
+
+        @GetMapping("/employees-with-hired-date")
+        public ResponseEntity<List<Candidate>> getEmployeesWithHiredDate() {
+            List<Candidate> employeesWithHiredDate = candidateService.getEmployeesWithHiredDate();
+            return ResponseEntity.ok(employeesWithHiredDate);
+        }
     }
+
 
