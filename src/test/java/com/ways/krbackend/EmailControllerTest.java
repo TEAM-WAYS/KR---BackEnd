@@ -1,12 +1,15 @@
 package com.ways.krbackend;
 
+import com.ways.krbackend.DTO.ApplicationPoints;
 import com.ways.krbackend.controller.EmailController;
 import com.ways.krbackend.model.email;
+import com.ways.krbackend.service.ChatGtpApiService;
 import com.ways.krbackend.service.EmailService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,11 +17,15 @@ import org.springframework.http.ResponseEntity;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class EmailControllerTest {
+
+    @Mock
+    private ChatGtpApiService chatGtpApiService;
 
     @Mock
     private EmailService emailService;
@@ -96,7 +103,24 @@ public class EmailControllerTest {
         assertEquals(mockContent, ((Map<String, Optional<email>>) responseEntity.getBody()).get("content"));
     }
 
+
+    @Test
+    void searchByInquiry_ValidInquiry_ReturnsApplicationPointsList() {
+        // Arrange
+        String inquiry = "validInquiry";
+        List<ApplicationPoints> expectedPointsList = new LinkedList<>();
+        Mockito.when(chatGtpApiService.validateApplicationsQuick(inquiry))
+                .thenReturn(Optional.<LinkedList<ApplicationPoints>>of((LinkedList<ApplicationPoints>) expectedPointsList));
+
+        // Act
+        List<ApplicationPoints> result = emailController.searchByInquiry(inquiry);
+
+        // Assert
+        assertEquals(expectedPointsList, result);
+    }
+
 }
+
 
 
 
