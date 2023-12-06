@@ -1,20 +1,23 @@
 package com.ways.krbackend.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+
+import java.time.LocalDate;
+
 @Entity
 public class Candidate {
 
-        @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Long id;
-        private String name;
-        private String email;
-        private String phone;
-        private String resumeUrl;
-        private boolean isFavorite;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String name;
+    private String email;
+    private String phone;
+    private String resumeUrl;
+    private boolean isFavorite;
+    private boolean isEmployee;
+    @Column(name = "hired_date")
+    private LocalDate hiredDate;
 
     @Override
     public String toString() {
@@ -74,7 +77,23 @@ public class Candidate {
     public void setFavorite(boolean favorite) {
         isFavorite = favorite;
     }
+
+    public boolean isEmployee() {
+        return isEmployee;
     }
+
+    public void setIsEmployee(boolean employee) {
+        isEmployee = employee;
+    }
+
+    public LocalDate getHiredDate() {
+        return hiredDate;
+    }
+
+    public void setHiredDate(LocalDate hiredDate) {
+        this.hiredDate = hiredDate;
+    }
+}
 
 
 

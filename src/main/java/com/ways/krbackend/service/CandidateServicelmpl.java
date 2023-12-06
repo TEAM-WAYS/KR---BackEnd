@@ -2,9 +2,11 @@ package com.ways.krbackend.service;
 
 import com.ways.krbackend.model.Candidate;
 import com.ways.krbackend.repository.CandidateRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,14 +38,38 @@ public class CandidateServicelmpl implements CandidateService {
         }
 
         @Override
-        public Optional<Candidate> findById(Long id) {
-        return Optional.empty();
-    }
-
-        @Override
         public void save(Candidate candidate) {
 
     }
+        @Override
+        public List<Candidate> getEmployeeCandidates() {
+        return candidateRepository.findByIsEmployeeTrue();
+    }
+
+        @Override
+        public List<Candidate> getEmployeesWithHiredDate() {
+        return candidateRepository.findByHiredDateNotNull();
+    }
+    @Override
+    public void deleteCandidate(Long candidateId) {
+        candidateRepository.deleteById(candidateId);
+    }
+    @Override
+    @Transactional  // Ensure both operations (move and delete) are part of the same transaction
+    public void moveCandidateToEmployee(Long candidateId) {
+        Optional<Candidate> optionalCandidate = candidateRepository.findById(candidateId);
+
+        optionalCandidate.ifPresent(candidate -> {
+            candidate.setIsEmployee(true);
+            candidate.setHiredDate(LocalDate.now());
+            candidateRepository.save(candidate);
+
+            // Delete the candidate from the "Candidate list"
+            candidateRepository.deleteById(candidateId);
+        });
+    }
+
 }
+
 
 
