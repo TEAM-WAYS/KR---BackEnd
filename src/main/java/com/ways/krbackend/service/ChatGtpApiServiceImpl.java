@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.web.csrf.CsrfAuthenticationStrategy;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -77,9 +78,12 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
 
     @Override
     public List<Application> validateApplicationsQuick(String inquiry, int noOfApplications) {
+        System.out.println("/n ##--validateApplicationsQuick running--## /n");
         String message = "Give me 20 keyword from this inquiry: "+ inquiry+
                 ", to find in a resume of a suitable job candidate ";
         List<Choice> lst = chatWithGPT(message);
+
+        System.out.println("/n ##-- from chatGPT: "+lst.get(0).getMessage()+" --## /n");
 
         String[] wordList = lst.get(0).getMessage().toString().split(" ");
         List<ApplicationPoints> applPointsList = new ArrayList<>() ;
@@ -87,44 +91,57 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
 
         List<Application> applications = applicasionService.getApplications();
         for (Application application : applications) {
+            System.out.println("/n looking in appliction: "+application.getId()+" for word: /n");
             int points = 0;
             for (String word : wordList) {
+                System.out.println("    "+word+": ");
                 if(application.getSummery().contains(word)){
+                    System.out.print(" FOUND");
                     points++;
+                }else {
+                    System.out.print(" NOT FOUND");
                 }
             }
+            System.out.println("Total points: "+ points);
             applPointsList.add(new ApplicationPoints(application,points));
         }
         applPointsList.sort(Comparator.comparing(ApplicationPoints::getPoints));
         List<Application> apHighscore = new ArrayList<>();
+        System.out.println("/n Best "+noOfApplications+" scoring applications: /n");
         int i = 1;
         for(ApplicationPoints ap:applPointsList){
             apHighscore.add(ap.getApplication());
+            System.out.println("    Appl: "+ap.getApplication().getId()+" - "+ap.getPoints()+" points");
             if(i>noOfApplications){
                 break;
             }
             i++;
         }
+        System.out.println("/n ##--validateApplicationsQuick Success--## /n");
         return apHighscore;
     }
 
     @Override
     public Optional<List<ApplicationPointsII>> validateApplicationsLong(String inquiry, int noOfApplications) {
+        System.out.println("/n ##--validateApplicationsLong running--## /n");
         String message = "Witch of the following candidates matches best to this inquiry: n/"+ inquiry+"n/ Candidates: n/";
 
         List<Application> applications = validateApplicationsQuick(inquiry,noOfApplications+5);
 
         //List<Application> applications = applicasionService.getApplications();
-
+        System.out.println("/n --Assessing the "+noOfApplications+" best applications with chatGtp-- /n");
         for (Application application : applications) {
             message +="applicationId: "+ application.getId() + ": /n" + application.getSummery() +"/n";
         }
         message += "Return me a list of JSON objects with the attributes applicationId, points, reason (short), " +
                 "for the "+noOfApplications+" best applications,ordered by points given  ";
+        System.out.println("Message for for ChatGPT: /n"+message );
         List<Choice> lst = chatWithGPT(message);
+        System.out.println("Response from GTP: /n "+lst.get(0).getMessage());
         ObjectMapper objectMapper = new ObjectMapper();
 
         try{
+            System.out.println("Trying to pase respone to a list of objects");
             List<ApplicationPointsII> applicationPointsIIList = objectMapper.readValue(lst.get(0).getMessage().getContent(), new TypeReference<List<ApplicationPointsII>>() {
             });
             /*for(ApplicationPointsII apII : applicationPointsIIList){
@@ -134,15 +151,17 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
                     }
                 }
             }*/
+            System.out.println("looking for applications by id");
             applicationPointsIIList.forEach(apII -> {
                 applications.stream()
                         .filter(a -> a.getId() == apII.getAppId())
                         .findFirst()
                         .ifPresent(apII::setApplication);
             });
-
+            System.out.println("/n ##--validateApplicationsLong Success--## /n");
             return Optional.of(applicationPointsIIList);
         }catch (Exception e){
+            System.out.println("Failed");
             return Optional.empty();
         }
 
