@@ -32,7 +32,6 @@ public class UserController {
 
     @PostMapping("/new-user")
     public ResponseEntity<?> postUser(@RequestBody Manager manager){
-
         try {
             manager.setPwd(passwordEncoder.encode(manager.getPwd()));
             Optional<Manager> response = userService.postUser(manager);
