@@ -20,6 +20,8 @@ import org.springframework.web.cors.CorsConfigurationSource;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+
 @Configuration
 public class SecurityConfig {
 
@@ -32,8 +34,11 @@ public class SecurityConfig {
                         @Override
                         public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
                             CorsConfiguration config = new CorsConfiguration();
-                            config.setAllowedOrigins(Collections.singletonList("http://localhost:63342"));
-                            config.setAllowedOrigins(Collections.singletonList("https://api.openai.com/v1/chat/completions"));
+
+
+                            config.setAllowedOrigins(List.of("http://localhost:63342"," https://api.openai.com/v1/chat/completions"));
+                            //config.setAllowedOrigins(Collections.singletonList("http://localhost:63342"));
+
                             config.setAllowedMethods(Collections.singletonList("*"));
                             config.setAllowCredentials(true);
                             config.setAllowedHeaders(Collections.singletonList("*"));
