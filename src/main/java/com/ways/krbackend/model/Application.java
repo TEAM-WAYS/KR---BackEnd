@@ -1,5 +1,7 @@
 package com.ways.krbackend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 @Entity
@@ -13,6 +15,7 @@ public class Application {
     private int phone;
     private String profession;
     private String title;
+    @JsonIgnore
     @OneToOne
     @JoinColumn(name = "email", referencedColumnName = "id")
     private Email email;

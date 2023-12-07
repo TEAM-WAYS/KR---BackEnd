@@ -35,7 +35,7 @@ public class ApplicationServiceImpl implements ApplicationService {
         return applicationRepository.findAll();
     }
 
-    @Scheduled(fixedRate = 2000000)
+    @Scheduled(fixedRate = 20000000)
     public void autoSyncApplicants() {
         syncApplicants();
     }
