@@ -2,7 +2,7 @@ package com.ways.krbackend;
 
 import com.ways.krbackend.DTO.ApplicationPoints;
 import com.ways.krbackend.controller.EmailController;
-import com.ways.krbackend.model.email;
+import com.ways.krbackend.model.Email;
 import com.ways.krbackend.service.ChatGtpApiService;
 import com.ways.krbackend.service.EmailService;
 import org.junit.jupiter.api.Test;
@@ -36,14 +36,14 @@ public class EmailControllerTest {
     @Test
     public void testGetEmails() {
         // Arange
-        List<email> mockEmails = Arrays.asList(
-                new email(),
-                new email()
+        List<Email> mockEmails = Arrays.asList(
+                new Email(),
+                new Email()
         );
         when(emailService.getEmails()).thenReturn(mockEmails);
 
         // Act
-        List<email> result = emailController.getEmails();
+        List<Email> result = emailController.getEmails();
 
         // Asert
         assertEquals(mockEmails, result);
@@ -77,11 +77,11 @@ public class EmailControllerTest {
     public void testGetEmailById() {
         // Arrange
         Long emailId = 1L;
-        email mockEmail = new email();
+        Email mockEmail = new Email();
         when(emailService.getEmailById(emailId)).thenReturn(mockEmail);
 
         // Actt
-        ResponseEntity<email> responseEntity = emailController.getEmailById(emailId);
+        ResponseEntity<Email> responseEntity = emailController.getEmailById(emailId);
 
         // Asse
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
@@ -92,7 +92,7 @@ public class EmailControllerTest {
     public void testGetContentById() {
         // Arange
         Long emailId = 1L;
-        Optional<email> mockContent = Optional.of(new email());
+        Optional<Email> mockContent = Optional.of(new Email());
         when(emailService.getContentById(emailId)).thenReturn(mockContent);
 
         // Act
@@ -100,7 +100,7 @@ public class EmailControllerTest {
 
         // Assert
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertEquals(mockContent, ((Map<String, Optional<email>>) responseEntity.getBody()).get("content"));
+        assertEquals(mockContent, ((Map<String, Optional<Email>>) responseEntity.getBody()).get("content"));
     }
 
 
@@ -120,7 +120,6 @@ public class EmailControllerTest {
     }
 
 }
-
 
 
 

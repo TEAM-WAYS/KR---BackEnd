@@ -1,7 +1,6 @@
 package com.ways.krbackend.controller;
 
-import com.ways.krbackend.DTO.ApplicationPoints;
-import com.ways.krbackend.model.email;
+import com.ways.krbackend.model.Email;
 import com.ways.krbackend.service.ChatGtpApiService;
 import com.ways.krbackend.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +20,7 @@ public class EmailController {
     private ChatGtpApiService chatGtpApiService;
 
     @GetMapping("/emails")
-    public List<email> getEmails() {
+    public List<Email> getEmails() {
         return emailService.getEmails();
     }
 
@@ -36,8 +35,8 @@ public class EmailController {
     }
 
     @GetMapping("/emails/{id}")
-    public ResponseEntity<email> getEmailById(@PathVariable Long id) {
-        email email = emailService.getEmailById(id);
+    public ResponseEntity<Email> getEmailById(@PathVariable Long id) {
+        Email email = emailService.getEmailById(id);
 
         if (email != null) {
             return new ResponseEntity<>(email, HttpStatus.OK);
@@ -47,10 +46,10 @@ public class EmailController {
     }
     @GetMapping("/emails/content/{id}")
     public ResponseEntity<Object> getContentById(@PathVariable Long id) {
-        Optional<email> content = emailService.getContentById(id);
+        Optional<Email> content = emailService.getContentById(id);
 
         if (content != null) {
-            Map<String, Optional<email>> response = new HashMap<>();
+            Map<String, Optional<Email>> response = new HashMap<>();
             response.put("content", content);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
@@ -58,13 +57,18 @@ public class EmailController {
         }
     }
 
-    @GetMapping("/email/search")
-    public List<ApplicationPoints> searchByInquiry( @RequestParam String inquiry){
-        Optional<LinkedList<ApplicationPoints>> applicationPointsList = chatGtpApiService.validateApplicationsQuick(inquiry);
-        if(applicationPointsList!=null){
-            return applicationPointsList.get();
+    /*
+    @GetMapping("/emails/transform") // TODO: metode skal tage alle nye email
+    public ResponseEntity<Object> turnEmailIntoApplication(){
+        System.out.println("--endpoint email/transform running--");
+        ResponseEntity<Object> response = chatGtpApiService.turnEmailIntoApplication();
+        if(response.equals(HttpStatus.OK) ){
+            System.out.println("--endpoint email/transform success--");
+            return new ResponseEntity<>(HttpStatus.OK);
+        }else {
+            return  new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
         }
-        return null;
 
     }
+     */
 }

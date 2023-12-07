@@ -48,6 +48,7 @@ public class UserController {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(manager.getUserName(), manager.getPwd()));
          if(authentication.isAuthenticated()){
              String jwtToken = jwtTokenService.generateJwtToken(authentication);
+             System.out.println("--endpoint login-user: Du er logget på--");
                return ResponseEntity.status(HttpStatus.OK)
                        .header("Authorization", "Bearer " + jwtToken)
                        .body(new ApiResponse("Du er logget på"));

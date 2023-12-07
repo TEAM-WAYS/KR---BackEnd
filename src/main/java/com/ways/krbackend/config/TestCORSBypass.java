@@ -13,7 +13,7 @@ public class TestCORSBypass {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:63342") // Replace with the origin of your frontend
+                        .allowedOrigins("http://localhost:63342/KR---FrontEnd/Html") // Replace with the origin of your frontend
                         .allowedMethods("GET", "POST", "PUT", "DELETE")
                         .allowedHeaders("*");
             }

@@ -20,6 +20,8 @@ import org.springframework.web.cors.CorsConfigurationSource;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+
 @Configuration
 public class SecurityConfig {
 
@@ -42,13 +44,13 @@ public class SecurityConfig {
                         }
                     })).csrf((csrf) -> csrf.csrfTokenRequestHandler(requestHandler).ignoringRequestMatchers("/new-user","/login-user")
                             .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
-                    //.addFilterAfter(new JWTTokenGeneratorFilter(), BasicAuthenticationFilter.class)
-                    //shit does not work
                     .addFilterBefore(new JWTTokenValidatorFilter(), BasicAuthenticationFilter.class)
                     .authorizeHttpRequests((requests)->requests
                             //add to whitelist for authenticated sites
                             .requestMatchers("/emails/**").authenticated()
                             .requestMatchers("/emails").authenticated()
+                            .requestMatchers("/application/search").authenticated()
+                            .requestMatchers("/application").authenticated()
                             .requestMatchers("/new-user","/login-user").permitAll()
 
                     )

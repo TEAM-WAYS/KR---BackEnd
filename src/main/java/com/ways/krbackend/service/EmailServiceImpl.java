@@ -1,6 +1,6 @@
 package com.ways.krbackend.service;
 
-import com.ways.krbackend.model.email;
+import com.ways.krbackend.model.Email;
 import com.ways.krbackend.repository.emailRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,7 +36,7 @@ public class EmailServiceImpl implements EmailService {
     private static final long MAX_ATTACHMENT_SIZE_BYTES = 10 * 1024 * 1024; //bytes
 
     @Override
-    public List<email> getEmails() {
+    public List<Email> getEmails() {
         return emailRepository.findAll();
     }
     @Scheduled(fixedRate = 2000000)
@@ -46,13 +46,13 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public void syncEmails() {
         try {
-            List<email> remoteEmails = fetchEmailsFromRemote();
+            List<Email> remoteEmails = fetchEmailsFromRemote();
 
-            for (email remoteEmail : remoteEmails) {
-                Optional<email> existingEmail = emailRepository.findBySubject(remoteEmail.getSubject());
+            for (Email remoteEmail : remoteEmails) {
+                Optional<Email> existingEmail = emailRepository.findBySubject(remoteEmail.getSubject());
 
                 if (existingEmail.isPresent()) {
-                    email localEmail = existingEmail.get();
+                    Email localEmail = existingEmail.get();
                     localEmail.setFromAddress(remoteEmail.getFromAddress());
                     localEmail.setSentDate(remoteEmail.getSentDate());
                     emailRepository.save(localEmail);
@@ -129,8 +129,8 @@ public class EmailServiceImpl implements EmailService {
         return message.getBytes(StandardCharsets.UTF_8);
     }
     @Override
-    public List<email> fetchEmailsFromRemote() {
-        List<email> emails = new ArrayList<>();
+    public List<Email> fetchEmailsFromRemote() {
+        List<Email> emails = new ArrayList<>();
 
         try {
             Properties properties = new Properties();
@@ -149,7 +149,7 @@ public class EmailServiceImpl implements EmailService {
                 Message[] messages = inbox.getMessages();
 
                 for (Message message : messages) {
-                    email email = new email();
+                    Email email = new Email();
                     email.setSubject(message.getSubject());
                     email.setFromAddress(message.getFrom()[0].toString());
                     email.setSentDate(message.getSentDate());
@@ -250,13 +250,13 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public email getEmailById(Long id) {
-        Optional<email> optionalEmail = emailRepository.findById(id);
+    public Email getEmailById(Long id) {
+        Optional<Email> optionalEmail = emailRepository.findById(id);
         return optionalEmail.orElse(null);
     }
 
     @Override
-    public Optional<email> getContentById(Long id) {
+    public Optional<Email> getContentById(Long id) {
         return emailRepository.findById(id);
     }
 }
