@@ -13,7 +13,7 @@ public class Application {
     @Column(columnDefinition = "LONGTEXT")
     private String summary;
     private int age;
-    private int phone;
+    private String phone;
     private String profession;
     private String title;
     @JsonIgnore
@@ -54,11 +54,11 @@ public class Application {
         this.age = age;
     }
 
-    public int getPhone() {
+    public String getPhone() {
         return phone;
     }
 
-    public void setPhone(int phoneNumber) {
+    public void setPhone(String phoneNumber) {
         this.phone = phoneNumber;
     }
 
