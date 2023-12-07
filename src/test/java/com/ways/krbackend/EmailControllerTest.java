@@ -104,6 +104,7 @@ public class EmailControllerTest {
     }
 
 
+    
     @Test
     void searchByInquiry_ValidInquiry_ReturnsApplicationPointsList() {
         // Arrange

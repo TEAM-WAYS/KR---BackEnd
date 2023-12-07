@@ -1,7 +1,6 @@
 package com.ways.krbackend.controller;
 
 import com.ways.krbackend.model.Email;
-import com.ways.krbackend.service.ChatGtpApiService;
 import com.ways.krbackend.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,9 +14,6 @@ public class EmailController {
 
     @Autowired
     private EmailService emailService;
-
-    @Autowired
-    private ChatGtpApiService chatGtpApiService;
 
     @GetMapping("/emails")
     public List<Email> getEmails() {

@@ -64,7 +64,7 @@ public class ApplicationServiceImpl implements ApplicationService {
                     System.out.println("Retrying due to parsing error. Retries left: " + retryCount);
 
                     try {
-                        Thread.sleep(60000);
+                        Thread.sleep(6000);
                     } catch (InterruptedException interruptedException) {
                         Thread.currentThread().interrupt();
                     }
@@ -77,9 +77,9 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     public Application parseEmail(List<Choice> list) {
         String email = list.get(0).getMessage().getContent();
-
+        System.out.println("email.getContent" + email);
         String jsonString = extractJson(email);
-
+        System.out.println("jsonString"+jsonString);
         if (jsonString == null || jsonString.isEmpty()) {
             System.out.println("No valid JSON content found. Skipping parsing.");
             return null;

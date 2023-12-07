@@ -20,7 +20,6 @@ import org.springframework.web.cors.CorsConfigurationSource;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 @Configuration
 public class SecurityConfig {
@@ -52,7 +51,6 @@ public class SecurityConfig {
                             .requestMatchers("/application/search").authenticated()
                             .requestMatchers("/application").authenticated()
                             .requestMatchers("/new-user","/login-user").permitAll()
-
                     )
                     .formLogin(Customizer.withDefaults())
                     .httpBasic(Customizer.withDefaults());
