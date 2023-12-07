@@ -32,7 +32,6 @@ public class UserController {
 
     @PostMapping("/new-user")
     public ResponseEntity<?> postUser(@RequestBody Manager manager){
-
         try {
             manager.setPwd(passwordEncoder.encode(manager.getPwd()));
             Optional<Manager> response = userService.postUser(manager);
@@ -45,16 +44,14 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("system error: "+ error);
         }
     }
-    @PostMapping("/login-user")
-    public ResponseEntity<String> login(@RequestBody Manager manager) {
-        System.out.println("--endpoint login-user: running--");
+    @PostMapping("/login-user") public ResponseEntity<?> login(@RequestBody Manager manager) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(manager.getUserName(), manager.getPwd()));
          if(authentication.isAuthenticated()){
              String jwtToken = jwtTokenService.generateJwtToken(authentication);
              System.out.println("--endpoint login-user: Du er logget på--");
                return ResponseEntity.status(HttpStatus.OK)
                        .header("Authorization", "Bearer " + jwtToken)
-                       .body("Du er logget på");
+                       .body(new ApiResponse("Du er logget på"));
          } else {
          throw new UsernameNotFoundException("invalid user request..!!");
          }
