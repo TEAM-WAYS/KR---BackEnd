@@ -34,11 +34,7 @@ public class SecurityConfig {
                         @Override
                         public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
                             CorsConfiguration config = new CorsConfiguration();
-
-
-                            config.setAllowedOrigins(List.of("http://localhost:63342"," https://api.openai.com/v1/chat/completions"));
-                            //config.setAllowedOrigins(Collections.singletonList("http://localhost:63342"));
-
+                            config.setAllowedOrigins(Collections.singletonList("http://localhost:63342"));
                             config.setAllowedMethods(Collections.singletonList("*"));
                             config.setAllowCredentials(true);
                             config.setAllowedHeaders(Collections.singletonList("*"));
@@ -48,8 +44,6 @@ public class SecurityConfig {
                         }
                     })).csrf((csrf) -> csrf.csrfTokenRequestHandler(requestHandler).ignoringRequestMatchers("/new-user","/login-user")
                             .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
-                    //.addFilterAfter(new JWTTokenGeneratorFilter(), BasicAuthenticationFilter.class)
-                    //shit does not work
                     .addFilterBefore(new JWTTokenValidatorFilter(), BasicAuthenticationFilter.class)
                     .authorizeHttpRequests((requests)->requests
                             //add to whitelist for authenticated sites
@@ -57,9 +51,6 @@ public class SecurityConfig {
                             .requestMatchers("/emails").authenticated()
                             .requestMatchers("/application/search").authenticated()
                             .requestMatchers("/application").authenticated()
-                            .requestMatchers("https://api.openai.com/v1/chat/completions").authenticated()
-
-
                             .requestMatchers("/new-user","/login-user").permitAll()
 
                     )

@@ -1,23 +1,9 @@
 package com.ways.krbackend.service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import com.ways.krbackend.DTO.*;
-import com.ways.krbackend.model.Application;
-import com.ways.krbackend.model.email;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.web.csrf.CsrfAuthenticationStrategy;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
-
-import java.util.*;
-
 import com.ways.krbackend.DTO.ChatRequest;
 import com.ways.krbackend.DTO.ChatResponse;
 import com.ways.krbackend.DTO.Choice;
@@ -26,29 +12,17 @@ import com.ways.krbackend.DTO.Message;
 import java.util.ArrayList;
 import java.util.List;
 
-import static aj.org.objectweb.asm.Type.getType;
-
 @Component
 public class ChatGtpApiServiceImpl implements ChatGtpApiService{
-    @Value("${spring.ai.bearer}")
-    private String gtpApiKey;
-    /*@Value("${spring.ai.bearer}")
-    private String bearer;*/
-
-    @Autowired
-    private EmailService emailService;
-
-    @Autowired
-    private ApplicasionService applicasionService;
 
     private final WebClient webClient;
 
+    @Value("${spring.ai.bearer}")
+    private String bearer;
 
     public ChatGtpApiServiceImpl(WebClient.Builder webClientBuilder) {
         this.webClient = webClientBuilder.baseUrl("https://api.openai.com/v1/chat/completions").build();
     }
-
-
     public List<Choice> chatWithGPT(String message) {
         ChatRequest chatRequest = new ChatRequest();
         chatRequest.setModel("gpt-3.5-turbo");
@@ -58,13 +32,13 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
         chatRequest.setMessages(lstMessages);
         chatRequest.setN(1); //n er antal svar fra chatgpt
         chatRequest.setTemperature(1); //jo højere jo mere fantasifuldt svar (se powerpoint)
-        chatRequest.setMaxTokens(1000); //længde af svar
+        chatRequest.setMaxTokens(300); //længde af svar
         chatRequest.setStream(false); //stream = true, er for viderekomne, der kommer flere svar asynkront
         chatRequest.setPresencePenalty(1);
 
         ChatResponse response = webClient.post()
                 .contentType(MediaType.APPLICATION_JSON)
-                .headers(h -> h.setBearerAuth(gtpApiKey))
+                .headers(h -> h.setBearerAuth(bearer))
                 .bodyValue(chatRequest)
                 .retrieve()
                 .bodyToMono(ChatResponse.class)
@@ -74,8 +48,7 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
 
         return lst;
     }
-
-
+    /*
     @Override
     public List<Application> validateApplicationsQuick(String inquiry, int noOfApplications) {
         System.out.println("/n ##--validateApplicationsQuick running--## /n");
@@ -89,13 +62,13 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
         List<ApplicationPoints> applPointsList = new ArrayList<>() ;
 
 
-        List<Application> applications = applicasionService.getApplications();
+        List<Application> applications = applicationService.getApplications();
         for (Application application : applications) {
             System.out.println("/n looking in appliction: "+application.getId()+" for word: /n");
             int points = 0;
             for (String word : wordList) {
                 System.out.println("    "+word+": ");
-                if(application.getSummery().contains(word)){
+                if(application.getSummary().contains(word)){
                     System.out.print(" FOUND");
                     points++;
                 }else {
@@ -131,7 +104,7 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
         //List<Application> applications = applicasionService.getApplications();
         System.out.println("/n --Assessing the "+noOfApplications+" best applications with chatGtp-- /n");
         for (Application application : applications) {
-            message +="applicationId: "+ application.getId() + ": /n" + application.getSummery() +"/n";
+            message +="applicationId: "+ application.getId() + ": /n" + application.getSummary() +"/n";
         }
         message += "Return me a list of JSON objects with the attributes applicationId, points, reason (short), " +
                 "for the "+noOfApplications+" best applications,ordered by points given  ";
@@ -150,7 +123,7 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
                         apII.setApplication(a);
                     }
                 }
-            }*/
+            }
             System.out.println("looking for applications by id");
             applicationPointsIIList.forEach(apII -> {
                 applications.stream()
@@ -168,7 +141,7 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
     }
 
     @Override
-    public Optional<Application> applicationFromEmail(email email){
+    public Optional<Application> applicationFromEmail(Email email){
 
 
         String message = "Analyse this job application: /n"+email.getContent()+" /n " +
@@ -186,7 +159,7 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
         try{
             Application application= objectMapper.readValue(lst.get(0).getMessage().getContent(), new TypeReference<Application>() {
             });
-            applicasionService.postApplication(application);
+            applicationService.postApplication(application);
             return Optional.of(application);
         }catch (Exception e){
             return Optional.empty();
@@ -197,12 +170,12 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
     @Override
     public ResponseEntity<Object> turnEmailIntoApplication(){
         System.out.println("--endpoint email/transform running--");
-        List<email> emails = emailService.getEmails();
-        for(email email: emails){
+        List<Email> emails = emailService.getEmails();
+        for(Email email: emails){
             if(email.getApplication() == null) {
                 Optional<Application> response = applicationFromEmail(email);
                 if(response!= null) {
-                    applicasionService.postApplication(response.get());
+                    applicationService.postApplication(response.get());
                 }
             }
         }
@@ -210,7 +183,5 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
         return new ResponseEntity<>(HttpStatus.OK);
 
     }
-
-
-
+     */
 }

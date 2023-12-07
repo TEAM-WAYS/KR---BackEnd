@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import java.util.Date;
 
 @Entity
-public class email {
+public class Email {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;
@@ -65,3 +65,4 @@ public class email {
         this.application = application;
     }
 }
+
