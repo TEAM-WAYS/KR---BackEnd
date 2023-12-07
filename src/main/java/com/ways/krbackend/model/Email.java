@@ -14,9 +14,18 @@ public class Email {
     private Date sentDate;
     @Column(columnDefinition = "LONGTEXT")
     private String content;
+    @Column(name = "attachments", columnDefinition = "BLOB")
+    private byte[] attachments;
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "email")
     private Application application;
 
+    public byte[] getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(byte[] attachments) {
+        this.attachments = attachments;
+    }
     public String getSubject() {
         return subject;
     }
@@ -65,4 +74,3 @@ public class Email {
         this.application = application;
     }
 }
-
