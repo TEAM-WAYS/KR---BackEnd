@@ -1,5 +1,5 @@
 package com.ways.krbackend.filter;
-
+/*
 import com.ways.krbackend.constant.SecurityConstants;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -22,7 +22,7 @@ import java.util.Date;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-/*
+
 public class JWTTokenGeneratorFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)

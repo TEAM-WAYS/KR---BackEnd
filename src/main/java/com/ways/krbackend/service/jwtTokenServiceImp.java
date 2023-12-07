@@ -1,4 +1,5 @@
 package com.ways.krbackend.service;
+/*
 
 import com.ways.krbackend.constant.SecurityConstants;
 import io.jsonwebtoken.Jwts;
@@ -31,3 +32,4 @@ public class jwtTokenServiceImp implements JwtTokenService {
                 .compact();
     }
 }
+*/

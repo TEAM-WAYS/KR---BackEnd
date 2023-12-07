@@ -12,7 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.web.csrf.CsrfAuthenticationStrategy;
+//import org.springframework.security.web.csrf.CsrfAuthenticationStrategy;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -169,26 +169,33 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
 
     @Override
     public Optional<Application> applicationFromEmail(email email){
-
-
-        String message = "Analyse this job application: /n"+email.getContent()+" /n " +
-                "Give me the name the following: /n" +
-                "1. Name of applicant/n" +
-                "2. Age of applicant/n" +
-                "3. Profession/n" +
-                "4. Title/n" +
-                "5. Phone number/n"+
-                "6. A short summery of the applicants best qualities./n" +
+        System.out.println("--method applicationFromEmail running--");
+        String message = "Analyse this job application: \n"+email.getContent()+" \n " +
+                "Give me the name the following: \n" +
+                "1. Name of applicant\n" +
+                "2. Age of applicant\n" +
+                "3. Profession\n" +
+                "4. Title\n" +
+                "5. Phone number\n"+
+                "6. A short summery of the applicants best qualities.\n" +
                 "Return as a Json object with the attributes: 'name', 'age', 'profession', 'title', 'phone', 'summery'";
+        System.out.println("- message for chatGPT: \n"+message);
         List<Choice> lst = chatWithGPT(message);
+        System.out.println("- answer from chatGtp: \n"+ lst.get(0).getMessage());
         ObjectMapper objectMapper= new ObjectMapper();
 
         try{
+            System.out.println("-trying to parse answer to Application");
             Application application= objectMapper.readValue(lst.get(0).getMessage().getContent(), new TypeReference<Application>() {
             });
+            System.out.println("Parsing succesful:");
+            System.out.println(application.toString());
+            System.out.println("Posting application to Repository ");
             applicasionService.postApplication(application);
             return Optional.of(application);
         }catch (Exception e){
+            System.out.println("###----ERROR: \n"+e);
+            System.out.println("###----ERROR END");
             return Optional.empty();
         }
 
@@ -196,14 +203,25 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
 
     @Override
     public ResponseEntity<Object> turnEmailIntoApplication(){
-        System.out.println("--endpoint email/transform running--");
+        System.out.println("--method turnEmailIntoApplication running--");
+        System.out.println("- getting list of mails -");
         List<email> emails = emailService.getEmails();
+        System.out.println("- run trough mail list with no of elements: "+emails.size());
         for(email email: emails){
+            if(!email.getSubject().contains("Application")){
+                System.out.println("!!--The Subject does not say Application-- ");
+                continue;
+            }
+            System.out.println("    -mail id: "+email.getId());
+            System.out.print("    Has already been Transformed?: ");
             if(email.getApplication() == null) {
+                System.out.println("-NO");
                 Optional<Application> response = applicationFromEmail(email);
                 if(response!= null) {
                     applicasionService.postApplication(response.get());
                 }
+            }else {
+                System.out.println("-Yes");
             }
         }
 

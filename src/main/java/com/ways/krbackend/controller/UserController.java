@@ -1,3 +1,4 @@
+/*
 package com.ways.krbackend.controller;
 
 import com.ways.krbackend.DTO.ApiResponse;
@@ -59,4 +60,4 @@ public class UserController {
          throw new UsernameNotFoundException("invalid user request..!!");
          }
     }
-}
+}*/

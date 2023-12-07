@@ -1,3 +1,4 @@
+/*
 package com.ways.krbackend.config;
 
 import com.ways.krbackend.filter.JWTTokenValidatorFilter;
@@ -22,7 +23,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-@Configuration
+
 public class SecurityConfig {
 
         @Bean
@@ -78,3 +79,4 @@ public class SecurityConfig {
             return config.getAuthenticationManager();
         }
 }
+*/
