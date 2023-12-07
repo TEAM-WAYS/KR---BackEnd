@@ -35,7 +35,7 @@ public class EmailServiceImpl implements EmailService {
     public List<email> getEmails() {
         return emailRepository.findAll();
     }
-    @Scheduled(fixedRate = 2000000)
+    @Scheduled(fixedRate = 60000)
     public void autoSyncEmails() {
         syncEmails();
     }
