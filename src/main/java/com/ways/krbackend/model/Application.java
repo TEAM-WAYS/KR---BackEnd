@@ -10,6 +10,7 @@ public class Application {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String name;
+    @Column(columnDefinition = "LONGTEXT")
     private String summary;
     private int age;
     private int phone;

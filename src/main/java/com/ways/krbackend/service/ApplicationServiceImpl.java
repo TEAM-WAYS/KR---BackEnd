@@ -101,10 +101,21 @@ public class ApplicationServiceImpl implements ApplicationService {
 
         return null;
     }
+    public String removeHtmlTags(String htmlString) {
+        String htmlRegex = "<[^>]*>";
+        String plainText = htmlString.replaceAll(htmlRegex, "");
+
+        return plainText;
+    }
 
     public List<Choice> applicationFromEmail(Email email){
-        System.out.println(email.getContent());
-        String message = "Analyse this job application: /n"+email.getContent()+" /n " +
+        String from = email.getFromAddress();
+        String subject = email.getSubject();
+        String plainText = removeHtmlTags(email.getContent());
+        String message = "Analyse this job application: /n"+
+                "from " + from + "/n" +
+                "subject " + subject + "/n" +
+                "email content" + plainText + "/n " +
                 "Create a JSON object with field names 'name', 'age', 'profession', 'title', 'phone', 'summary'/n" +
                 "assign Name of applicant to 'name' /n" +
                 "assign Age of applicant 'age'/n" +
