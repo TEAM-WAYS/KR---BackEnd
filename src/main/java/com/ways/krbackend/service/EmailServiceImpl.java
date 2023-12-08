@@ -39,6 +39,21 @@ public class EmailServiceImpl implements EmailService {
     public List<Email> getEmails() {
         return emailRepository.findAll();
     }
+    public String removeNonHtml(String htmlString) {
+        System.out.println("non processed: " + htmlString);
+        int htmlIndex = htmlString.indexOf("<html>");
+
+        String cleanHtml = (htmlIndex != -1) ? htmlString.substring(htmlIndex) : htmlString;
+        System.out.println(cleanHtml);
+        return cleanHtml;
+    }
+    public Optional<Email> htmlEmail(Email email) {
+            String cleanContent = removeNonHtml(email.getContent());
+            email.setContent(cleanContent);
+
+        return Optional.of(email);
+    }
+
     @Scheduled(fixedRate = 2000000)
     public void autoSyncEmails() {
         syncEmails();

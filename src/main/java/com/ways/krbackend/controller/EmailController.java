@@ -42,7 +42,8 @@ public class EmailController {
     }
     @GetMapping("/emails/content/{id}")
     public ResponseEntity<Object> getContentById(@PathVariable Long id) {
-        Optional<Email> content = emailService.getContentById(id);
+        Email email = emailService.getEmailById(id);
+        Optional<Email> content = emailService.htmlEmail(email);
 
         if (content != null) {
             Map<String, Optional<Email>> response = new HashMap<>();

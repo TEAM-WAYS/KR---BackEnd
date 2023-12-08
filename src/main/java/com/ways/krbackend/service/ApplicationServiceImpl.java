@@ -102,8 +102,8 @@ public class ApplicationServiceImpl implements ApplicationService {
         return null;
     }
     public String removeHtmlTags(String htmlString) {
-        String htmlRegex = "<[^>]*>";
-        String plainText = htmlString.replaceAll(htmlRegex, "");
+        String[] parts = htmlString.split("<html>", 2);
+        String plainText = parts[0];
 
         return plainText;
     }
@@ -112,6 +112,7 @@ public class ApplicationServiceImpl implements ApplicationService {
         String from = email.getFromAddress();
         String subject = email.getSubject();
         String plainText = removeHtmlTags(email.getContent());
+        System.out.println(plainText);
         String message = "Analyse this job application: /n"+
                 "from " + from + "/n" +
                 "subject " + subject + "/n" +
