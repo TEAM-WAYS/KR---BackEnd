@@ -34,6 +34,9 @@ public class UserController {
     public ResponseEntity<?> postUser(@RequestBody Manager manager){
         try {
             manager.setPwd(passwordEncoder.encode(manager.getPwd()));
+            if (userService.userExists(manager.getUserName())) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("User already exists");
+            }
             Optional<Manager> response = userService.postUser(manager);
             if (response.isPresent()) {
             return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("new user applied"));

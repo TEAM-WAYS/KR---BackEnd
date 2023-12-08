@@ -40,7 +40,9 @@ public class UserServiceImpl implements UserDetailsService {
         }
         return new User(username,password,authorities);
     }
-
+    public boolean userExists(String username) {
+        return userRepository.existsByUserName(username);
+    }
     public Optional<Manager> postUser(Manager manager) {
         return Optional.of(userRepository.save(manager));
     }
