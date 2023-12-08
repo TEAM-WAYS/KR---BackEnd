@@ -5,6 +5,7 @@ import com.ways.krbackend.controller.UserController;
 import com.ways.krbackend.model.Manager;
 import com.ways.krbackend.service.JwtTokenService;
 import com.ways.krbackend.service.UserServiceImpl;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -13,9 +14,12 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Optional;
 
@@ -90,13 +94,11 @@ class UserControllerTest {
     }
 
 
-
-
     @Test
     void testLoginSuccess() {
         Manager manager = new Manager();
-        manager.setUserName("testUser");
-        manager.setPwd("testPassword");
+        manager.setUserName("Andr921eas");
+        manager.setPwd("83ee");
 
         Authentication authentication = mock(Authentication.class);
 
@@ -104,15 +106,17 @@ class UserControllerTest {
         when(authentication.isAuthenticated()).thenReturn(true);
         when(jwtTokenService.generateJwtToken(authentication)).thenReturn("testToken");
 
-        ResponseEntity<String> responseEntity = userController.login(manager);
+        ResponseEntity<ApiResponse> responseEntity = (ResponseEntity<ApiResponse>) userController.login(manager);
 
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals("Bearer testToken", responseEntity.getHeaders().getFirst("Authorization"));
-        assertEquals("Du er logget på", responseEntity.getBody());
+        assertEquals("Du er logget på", responseEntity.getBody().getMessage());
 
         verify(authenticationManager).authenticate(any());
         verify(jwtTokenService).generateJwtToken(authentication);
     }
+
+
 
     @Test
     void testLoginFailure() {
@@ -136,4 +140,3 @@ class UserControllerTest {
         verify(jwtTokenService, never()).generateJwtToken(any());
     }
 }
-
