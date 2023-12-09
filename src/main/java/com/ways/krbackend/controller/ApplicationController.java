@@ -35,9 +35,9 @@ public class ApplicationController {
     }
 
     @PostMapping("/application/search")
-    public List<ApplicationPointsII> searchByInquiry(@RequestParam String inquiry){
+    public String searchByInquiry(@RequestBody String inq){
         System.out.println("/n ##--endpoint application/search running--## /n");
-        Optional<List<ApplicationPointsII>> applicationPointsList = chatGtpApiService.validateApplicationsLong(inquiry,10);
+        Optional<String> applicationPointsList = chatGtpApiService.validateApplicationsLong(inq,10);
         if(applicationPointsList!=null){
             System.out.println("/n ##--endpoint application/search success--## /n");
             return applicationPointsList.get();

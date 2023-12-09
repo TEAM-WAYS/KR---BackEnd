@@ -78,24 +78,25 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
 
     @Override
     public List<Application> validateApplicationsQuick(String inquiry, int noOfApplications) {
-        System.out.println("/n ##--validateApplicationsQuick running--## /n");
-        String message = "Give me 20 keyword from this inquiry: "+ inquiry+
-                ", to find in a resume of a suitable job candidate ";
+        System.out.println("\n ##--validateApplicationsQuick running--## \n");
+        String message = "Give me a list of 100 keyword from this inquiry: "+ inquiry+
+                ", to search in a resume of a suitable job candidate. Including all grammatical tenses of each word";
         List<Choice> lst = chatWithGPT(message);
 
-        System.out.println("/n ##-- from chatGPT: "+lst.get(0).getMessage()+" --## /n");
+        System.out.println("\n ##-- from chatGPT: "+lst.get(0).getMessage().getContent()+" --## \n");
 
         String[] wordList = lst.get(0).getMessage().toString().split(" ");
         List<ApplicationPoints> applPointsList = new ArrayList<>() ;
 
 
         List<Application> applications = applicasionService.getApplications();
+
         for (Application application : applications) {
-            System.out.println("/n looking in appliction: "+application.getId()+" for word: /n");
+            System.out.println("\n looking in appliction: "+application.getId()+" for word: \n");
             int points = 0;
             for (String word : wordList) {
                 System.out.println("    "+word+": ");
-                if(application.getSummery().contains(word)){
+                if(application.getSummary().contains(word)){
                     System.out.print(" FOUND");
                     points++;
                 }else {
@@ -122,55 +123,76 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
     }
 
     @Override
-    public Optional<List<ApplicationPointsII>> validateApplicationsLong(String inquiry, int noOfApplications) {
-        System.out.println("/n ##--validateApplicationsLong running--## /n");
-        String message = "Witch of the following candidates matches best to this inquiry: n/"+ inquiry+"n/ Candidates: n/";
+    public Optional<String> validateApplicationsLong(String inquiry, int noOfApplications) {
+        System.out.println("\n ##--validateApplicationsLong running--## \n");
+        String message = "Witch of the following candidates matches best to this inquiry: \n"+ inquiry+"\n Candidates: \n";
 
         List<Application> applications = validateApplicationsQuick(inquiry,noOfApplications+5);
 
         //List<Application> applications = applicasionService.getApplications();
-        System.out.println("/n --Assessing the "+noOfApplications+" best applications with chatGtp-- /n");
+        System.out.println("\n --Assessing the "+noOfApplications+" best applications with chatGtp-- \n");
         for (Application application : applications) {
-            message +="applicationId: "+ application.getId() + ": /n" + application.getSummery() +"/n";
+            message +="applicationId: "+ application.getId() + ": \n" + application.getSummary() +"\n";
         }
-        message += "Return me a list of JSON objects with the attributes applicationId, points, reason (short), " +
+        message += "Return me a list of JSON objects with the attributes applicationId, points, reason, " +
                 "for the "+noOfApplications+" best applications,ordered by points given  ";
-        System.out.println("Message for for ChatGPT: /n"+message );
+        System.out.println("Message for for ChatGPT: \n"+message );
         List<Choice> lst = chatWithGPT(message);
-        System.out.println("Response from GTP: /n "+lst.get(0).getMessage());
+        System.out.println("Response from GTP: \n "+lst.get(0).getMessage().getContent());
+        String answer = lst.get(0).getMessage().getContent();
+/*
+
         ObjectMapper objectMapper = new ObjectMapper();
 
         try{
-            System.out.println("Trying to pase respone to a list of objects");
+            System.out.println("Trying to Parse response to a list of DTO");
             List<ApplicationPointsII> applicationPointsIIList = objectMapper.readValue(lst.get(0).getMessage().getContent(), new TypeReference<List<ApplicationPointsII>>() {
             });
-            /*for(ApplicationPointsII apII : applicationPointsIIList){
+            */
+/*for(ApplicationPointsII apII : applicationPointsIIList){
                 for(Application a : applications){
                     if((a.getId())==(apII.getAppId())){
                         apII.setApplication(a);
                     }
                 }
-            }*/
-            System.out.println("looking for applications by id");
+            }*//*
+
+            System.out.println("looking for applications by id, and add to DTO");
             applicationPointsIIList.forEach(apII -> {
                 applications.stream()
-                        .filter(a -> a.getId() == apII.getAppId())
+                        .filter(a -> a.getId() == apII.getApplicationId())
                         .findFirst()
                         .ifPresent(apII::setApplication);
             });
-            System.out.println("/n ##--validateApplicationsLong Success--## /n");
+            System.out.println("\n ##--validateApplicationsLong Success--## \n");
             return Optional.of(applicationPointsIIList);
         }catch (Exception e){
             System.out.println("Failed");
             return Optional.empty();
         }
 
+*/
+        if(!lst.isEmpty()){
+            return Optional.of(answer);
+        }
+    return Optional.empty();
     }
+    public String removeHtmlTags(String htmlString) {
+        /*String htmlRegex = "<[^>]*>";
+        String plainText = htmlString.replaceAll(htmlRegex, "");*/
+        String[] parts = htmlString.split("<html>");
+        String plainText = parts[0];
+        return plainText;
+    }
+
+
+
+
 
     @Override
     public Optional<Application> applicationFromEmail(email email){
         System.out.println("--method applicationFromEmail running--");
-        String message = "Analyse this job application: \n"+email.getContent()+" \n " +
+        String message = "Analyse this job application: \n"+removeHtmlTags(email.getContent())+" \n " +
                 "Give me the name the following: \n" +
                 "1. Name of applicant\n" +
                 "2. Age of applicant\n" +
@@ -188,10 +210,17 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
             System.out.println("-trying to parse answer to Application");
             Application application= objectMapper.readValue(lst.get(0).getMessage().getContent(), new TypeReference<Application>() {
             });
-            System.out.println("Parsing succesful:");
-            System.out.println(application.toString());
+
+            System.out.println("Parsing successful:");
+            System.out.println("Setting Fk relations");
+            email.setApplication(application); // make relations
+            application.setEmail(email);// make relations
+            System.out.println("Application: \n"+"ID: "+application.getId()+"\nsummary: "+application.getSummary()+
+                    "\nname: "+application.getName()+"\nage: "+application.getAge()+"\n email"+application.getEmail()+
+                    "\ntitle: "+application.getTitle()+"\nprofession: "+application.getProfession()+"\nphone no: "+application.getPhone());
             System.out.println("Posting application to Repository ");
             applicasionService.postApplication(application);
+            System.out.println("Posting to repo. successful");
             return Optional.of(application);
         }catch (Exception e){
             System.out.println("###----ERROR: \n"+e);
@@ -218,7 +247,7 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
                 System.out.println("-NO");
                 Optional<Application> response = applicationFromEmail(email);
                 if(response!= null) {
-                    applicasionService.postApplication(response.get());
+                    //applicasionService.postApplication(response.get());
                 }
             }else {
                 System.out.println("-Yes");

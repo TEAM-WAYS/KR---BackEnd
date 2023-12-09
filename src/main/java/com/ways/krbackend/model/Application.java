@@ -1,22 +1,20 @@
 package com.ways.krbackend.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 
 @Entity
 public class Application {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String name;
-    private String summery;
+    private String summary;
     private int age;
     private int phone;
     private String profession;
     private String title;
     @OneToOne
-    @JoinColumn(name="application", referencedColumnName = "id")
+    @JoinColumn(name="email", referencedColumnName = "id")
     email email;
 
 
@@ -28,12 +26,12 @@ public class Application {
         this.id = id;
     }
 
-    public String getSummery() {
-        return summery;
+    public String getSummary() {
+        return summary;
     }
 
-    public void setSummery(String text) {
-        this.summery = text;
+    public void setSummary(String text) {
+        this.summary = text;
     }
 
     public String getName() {

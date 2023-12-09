@@ -3,22 +3,22 @@ package com.ways.krbackend.DTO;
 import com.ways.krbackend.model.Application;
 
 public class ApplicationPointsII {
-    private int appId;
+    private int applicationId;
     private int points;
     private String reason;
     private Application application;
 
     public ApplicationPointsII(int appId, int points) {
-        this.appId = appId;
+        this.applicationId = appId;
         this.points = points;
     }
 
-    public int getAppId() {
-        return appId;
+    public int getApplicationId() {
+        return applicationId;
     }
 
-    public void setAppId(int appId) {
-        this.appId = appId;
+    public void setApplicationId(int applicationId) {
+        this.applicationId = applicationId;
     }
 
     public int getPoints() {
