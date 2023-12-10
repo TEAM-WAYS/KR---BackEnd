@@ -93,7 +93,7 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
 
     @Override
     public Optional<List<ApplicationPointsII>> validateApplicationsLong(String inquiry) {
-        String message = "Witch of the following candidates matches best to this inquiry: n/"+ inquiry+"n/ Candidates: n/";
+        String message = "Whitch of the following candidates matches best to this inquiry: n/"+ inquiry+"n/ Candidates: n/";
 
 
 
@@ -140,7 +140,6 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
         }catch (Exception e){
             return Optional.empty();
         }
-
 
 
 
