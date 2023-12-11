@@ -2,13 +2,13 @@ package com.ways.krbackend.DTO;
 
 import com.ways.krbackend.model.Application;
 
-public class ApplicationPointsII {
+public class ApplicationPointsTransfer {
     private int applicationId;
     private int points;
     private String reason;
-    private Application application;
 
-    public ApplicationPointsII(int appId, int points) {
+
+    public ApplicationPointsTransfer(int appId, int points) {
         this.applicationId = appId;
         this.points = points;
     }
@@ -37,11 +37,5 @@ public class ApplicationPointsII {
         this.reason = reason;
     }
 
-    public Application getApplication() {
-        return application;
-    }
 
-    public void setApplication(Application application) {
-        this.application = application;
-    }
 }

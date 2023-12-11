@@ -1,7 +1,7 @@
 package com.ways.krbackend.controller;
 
 import com.ways.krbackend.DTO.ApplicationPoints;
-import com.ways.krbackend.DTO.ApplicationPointsII;
+import com.ways.krbackend.DTO.ApplicationPointsTransfer;
 import com.ways.krbackend.model.Application;
 import com.ways.krbackend.service.ApplicasionService;
 import com.ways.krbackend.service.ChatGtpApiService;
@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,13 +35,17 @@ public class ApplicationController {
 
     @PostMapping("/application/search")
     public String searchByInquiry(@RequestBody String inq){
-        System.out.println("/n ##--endpoint application/search running--## /n");
-        Optional<String> applicationPointsList = chatGtpApiService.validateApplicationsLong(inq,10);
-        if(applicationPointsList!=null){
-            System.out.println("/n ##--endpoint application/search success--## /n");
-            return applicationPointsList.get();
+        System.out.println("\n ##--endpoint application/search running--## \n");
+        Optional<String> answer = chatGtpApiService.validateApplicationsLong(inq,10);
+
+        if(answer.isPresent()){
+            System.out.println("\n ##--endpoint application/search success--## \n");
+            System.out.println(" from endpoint returning the following: \n"+answer.get());
+            return answer.get();
+            //return ResponseEntity.status(HttpStatus.OK).body(answer.get());
         }
-        System.out.println("/n ##--endpoint application/search NOT success !!! --## /n");
-        return null;
+        System.out.println("\n ##--endpoint application/search NOT success !!! --## \n");
+        //return ResponseEntity.status(HttpStatus.NOT_FOUND).body(answer.get());
+        return  null;
     }
 }

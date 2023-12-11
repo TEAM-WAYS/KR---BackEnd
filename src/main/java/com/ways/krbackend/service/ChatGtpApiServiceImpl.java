@@ -122,6 +122,39 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
         return apHighscore;
     }
 
+    private String extractJson(String rawContent) {
+        int start = rawContent.indexOf('[');
+        int end = rawContent.lastIndexOf(']');
+
+        if (start != -1 && end != -1 && start < end) {
+            return rawContent.substring(start, end + 1);
+        }else{
+            String newString ="[";
+            List<Integer> charIndexList = new ArrayList<>();
+            for(int i =0; i<rawContent.length();i++){
+                if(rawContent.charAt(i) == '{') {
+                    start=i;
+                }
+                if(rawContent.charAt(i) == '}') {
+                    end=i;
+                }
+                newString += rawContent.substring(start, end +1);
+                newString += ",";
+            }
+            if(newString.length()>1) {
+                newString = newString.substring(0, newString.length() - 1);
+                newString += "]";
+                return newString;
+            }else {
+                return null;
+            }
+
+        }
+
+
+
+    }
+
     @Override
     public Optional<String> validateApplicationsLong(String inquiry, int noOfApplications) {
         System.out.println("\n ##--validateApplicationsLong running--## \n");
@@ -134,49 +167,38 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
         for (Application application : applications) {
             message +="applicationId: "+ application.getId() + ": \n" + application.getSummary() +"\n";
         }
-        message += "Return me a list of JSON objects with the attributes applicationId, points, reason, " +
-                "for the "+noOfApplications+" best applications,ordered by points given  ";
+        message += "Return me a list of objects in JSON format with the attributes applicationId, points, reason, " +
+                "for the "+noOfApplications+" best applications shown,ordered by points given. Only this format [{},{}...]  ";
         System.out.println("Message for for ChatGPT: \n"+message );
         List<Choice> lst = chatWithGPT(message);
-        System.out.println("Response from GTP: \n "+lst.get(0).getMessage().getContent());
-        String answer = lst.get(0).getMessage().getContent();
-/*
+        System.out.println("pure answer: "+lst.get(0).getMessage().getContent());
+        String answer = extractJson(lst.get(0).getMessage().getContent());
+        System.out.println("Response from GTP clean: \n "+answer);
 
+/*
         ObjectMapper objectMapper = new ObjectMapper();
 
-        try{
+        try {
             System.out.println("Trying to Parse response to a list of DTO");
-            List<ApplicationPointsII> applicationPointsIIList = objectMapper.readValue(lst.get(0).getMessage().getContent(), new TypeReference<List<ApplicationPointsII>>() {
-            });
-            */
-/*for(ApplicationPointsII apII : applicationPointsIIList){
-                for(Application a : applications){
-                    if((a.getId())==(apII.getAppId())){
-                        apII.setApplication(a);
-                    }
-                }
-            }*//*
+            //List<ApplicationPointsTransfer> applicationList = objectMapper.readValue(answer, new TypeReference<List<ApplicationPointsTransfer>>() {});
+            List<ApplicationPointsTransfer> applicationList = Arrays.asList(objectMapper.readValue(answer, ApplicationPointsTransfer[].class));
+            if(!applicationList.isEmpty()){
+                System.out.println("## Parsing successful, returning to frontend");
+                return Optional.of(applicationList);
+            }
 
-            System.out.println("looking for applications by id, and add to DTO");
-            applicationPointsIIList.forEach(apII -> {
-                applications.stream()
-                        .filter(a -> a.getId() == apII.getApplicationId())
-                        .findFirst()
-                        .ifPresent(apII::setApplication);
-            });
-            System.out.println("\n ##--validateApplicationsLong Success--## \n");
-            return Optional.of(applicationPointsIIList);
         }catch (Exception e){
-            System.out.println("Failed");
-            return Optional.empty();
-        }
+            System.out.println("#####could not Parse Answer to DTO");
+        }*/
 
-*/
-        if(!lst.isEmpty()){
-            return Optional.of(answer);
-        }
-    return Optional.empty();
+
+
+
+    return Optional.of(answer);
     }
+
+
+
     public String removeHtmlTags(String htmlString) {
         /*String htmlRegex = "<[^>]*>";
         String plainText = htmlString.replaceAll(htmlRegex, "");*/
