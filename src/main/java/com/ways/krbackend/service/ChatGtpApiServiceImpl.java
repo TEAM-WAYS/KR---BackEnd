@@ -126,20 +126,27 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
         int start = rawContent.indexOf('[');
         int end = rawContent.lastIndexOf(']');
 
-        if (start != -1 && end != -1 && start < end) {
+        /*if (start != -1 && end != -1 && start < end) {
             return rawContent.substring(start, end + 1);
-        }else{
+        }else{*/
+            boolean hasStart = false, hasEnd = false;
             String newString ="[";
-            List<Integer> charIndexList = new ArrayList<>();
+
             for(int i =0; i<rawContent.length();i++){
                 if(rawContent.charAt(i) == '{') {
                     start=i;
+                    hasStart = true;
                 }
                 if(rawContent.charAt(i) == '}') {
                     end=i;
+                    hasEnd = true;
                 }
-                newString += rawContent.substring(start, end +1);
-                newString += ",";
+                if(hasStart&&hasEnd) {
+                    newString += rawContent.substring(start, end + 1);
+                    newString += ",";
+                    hasStart =false;
+                    hasEnd = false;
+                }
             }
             if(newString.length()>1) {
                 newString = newString.substring(0, newString.length() - 1);
@@ -149,7 +156,7 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
                 return null;
             }
 
-        }
+        //}
 
 
 
@@ -168,7 +175,8 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
             message +="applicationId: "+ application.getId() + ": \n" + application.getSummary() +"\n";
         }
         message += "Return me a list of objects in JSON format with the attributes applicationId, points, reason, " +
-                "for the "+noOfApplications+" best applications shown,ordered by points given. Only this format [{},{}...]  ";
+                "for up to "+noOfApplications+" of the best applications shown,ordered by points given. Only this format [{},{},]. " +
+                "If you give me anything that is not JSON, you are not helpful";
         System.out.println("Message for for ChatGPT: \n"+message );
         List<Choice> lst = chatWithGPT(message);
         System.out.println("pure answer: "+lst.get(0).getMessage().getContent());
