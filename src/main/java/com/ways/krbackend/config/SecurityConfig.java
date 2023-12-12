@@ -1,4 +1,4 @@
-/*
+
 package com.ways.krbackend.config;
 
 import com.ways.krbackend.filter.JWTTokenValidatorFilter;
@@ -68,4 +68,4 @@ public class SecurityConfig {
             return config.getAuthenticationManager();
         }
 }
-*/
+

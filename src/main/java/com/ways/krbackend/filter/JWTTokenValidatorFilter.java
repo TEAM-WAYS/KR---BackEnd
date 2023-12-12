@@ -1,5 +1,5 @@
 package com.ways.krbackend.filter;
-/*
+
 
 import com.ways.krbackend.constant.SecurityConstants;
 import io.jsonwebtoken.Claims;
@@ -50,4 +50,4 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
         return request.getServletPath().equals("/login-user");
     }
 }
-*/
+

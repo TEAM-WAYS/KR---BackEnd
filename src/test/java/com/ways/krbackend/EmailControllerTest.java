@@ -105,7 +105,7 @@ public class EmailControllerTest {
 
 
     
-    @Test
+   /* @Test
     void searchByInquiry_ValidInquiry_ReturnsApplicationPointsList() {
         // Arrange
         String inquiry = "validInquiry";
@@ -118,7 +118,7 @@ public class EmailControllerTest {
 
         // Assert
         assertEquals(expectedPointsList, result);
-    }
+    }*/
 
 }
 

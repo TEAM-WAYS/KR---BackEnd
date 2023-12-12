@@ -2,7 +2,8 @@ package com.ways.krbackend.service;
 
 import com.ways.krbackend.DTO.ApplicationPointsTransfer;
 import com.ways.krbackend.model.Application;
-import com.ways.krbackend.model.email;
+import com.ways.krbackend.model.Email;
+
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
@@ -15,7 +16,7 @@ public interface ChatGtpApiService {
 
     Optional<String> validateApplicationsLong(String inquiry, int noOfApplications);
 
-    Optional<Application> applicationFromEmail(email email);
+    Optional<Application> applicationFromEmail(Email email);
 
     ResponseEntity<Object> turnEmailIntoApplication();
 }

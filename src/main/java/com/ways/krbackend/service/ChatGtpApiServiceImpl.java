@@ -5,7 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.ways.krbackend.DTO.*;
 import com.ways.krbackend.model.Application;
-import com.ways.krbackend.model.email;
+import com.ways.krbackend.model.Email;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -39,7 +40,7 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
     private EmailService emailService;
 
     @Autowired
-    private ApplicasionService applicasionService;
+    private ApplicationService applicationService;
 
     private final WebClient webClient;
 
@@ -89,7 +90,7 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
         List<ApplicationPoints> applPointsList = new ArrayList<>() ;
 
 
-        List<Application> applications = applicasionService.getApplications();
+        List<Application> applications = applicationService.getApplications();
 
         for (Application application : applications) {
             System.out.println("\n looking in appliction: "+application.getId()+" for word: \n");
@@ -220,7 +221,7 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
 
 
     @Override
-    public Optional<Application> applicationFromEmail(email email){
+    public Optional<Application> applicationFromEmail(Email email){
         System.out.println("--method applicationFromEmail running--");
         String message = "Analyse this job application: \n"+removeHtmlTags(email.getContent())+" \n " +
                 "Give me the name the following: \n" +
@@ -249,7 +250,7 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
                     "\nname: "+application.getName()+"\nage: "+application.getAge()+"\n email"+application.getEmail()+
                     "\ntitle: "+application.getTitle()+"\nprofession: "+application.getProfession()+"\nphone no: "+application.getPhone());
             System.out.println("Posting application to Repository ");
-            applicasionService.postApplication(application);
+            applicationService.postApplication(application);
             System.out.println("Posting to repo. successful");
             return Optional.of(application);
         }catch (Exception e){
@@ -264,9 +265,9 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
     public ResponseEntity<Object> turnEmailIntoApplication(){
         System.out.println("--method turnEmailIntoApplication running--");
         System.out.println("- getting list of mails -");
-        List<email> emails = emailService.getEmails();
+        List<Email> emails = emailService.getEmails();
         System.out.println("- run trough mail list with no of elements: "+emails.size());
-        for(email email: emails){
+        for(Email email: emails){
             if(!email.getSubject().contains("Application")){
                 System.out.println("!!--The Subject does not say Application-- ");
                 continue;

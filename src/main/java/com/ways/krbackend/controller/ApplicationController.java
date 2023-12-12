@@ -17,7 +17,7 @@ import java.util.Optional;
 public class ApplicationController {
 
     @Autowired
-    ApplicasionService applicasionService;
+    ApplicationService applicationService;
 
     @Autowired
     private ChatGtpApiService chatGtpApiService;

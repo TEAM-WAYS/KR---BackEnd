@@ -1,5 +1,5 @@
 package com.ways.krbackend.service;
-/*
+
 
 import com.ways.krbackend.model.Manager;
 import com.ways.krbackend.repository.UserRepository;
@@ -48,4 +48,4 @@ public class UserServiceImpl implements UserDetailsService {
         return Optional.of(userRepository.save(manager));
     }
 }
-*/
+
