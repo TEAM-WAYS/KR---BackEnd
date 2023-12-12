@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 
 import org.springframework.http.ResponseEntity;
 //import org.springframework.security.web.csrf.CsrfAuthenticationStrategy;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -43,6 +44,9 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
     private ApplicationService applicationService;
 
     private final WebClient webClient;
+
+
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
 
     public ChatGtpApiServiceImpl(WebClient.Builder webClientBuilder) {
@@ -124,7 +128,7 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
         return apHighscore;
     }
 
-    private String extractJson(String rawContent) {
+    private String extractJsonII(String rawContent) {
         int start = rawContent.indexOf('[');
         int end = rawContent.lastIndexOf(']');
 
@@ -182,7 +186,7 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
         System.out.println("Message for for ChatGPT: \n"+message );
         List<Choice> lst = chatWithGPT(message);
         System.out.println("pure answer: "+lst.get(0).getMessage().getContent());
-        String answer = extractJson(lst.get(0).getMessage().getContent());
+        String answer = extractJsonII(lst.get(0).getMessage().getContent());
         System.out.println("Response from GTP clean: \n "+answer);
 
 /*
@@ -209,7 +213,7 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
 
 
 
-    public String removeHtmlTags(String htmlString) {
+    public String removeHtmlTagsII(String htmlString) {
         /*String htmlRegex = "<[^>]*>";
         String plainText = htmlString.replaceAll(htmlRegex, "");*/
         String[] parts = htmlString.split("<html>");
@@ -221,8 +225,8 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
 
 
 
-    @Override
-    public Optional<Application> applicationFromEmail(Email email){
+
+    public Optional<Application> applicationFromEmailII(Email email){
         System.out.println("--method applicationFromEmail running--");
         String message = "Analyse this job application: \n"+removeHtmlTags(email.getContent())+" \n " +
                 "Give me the name the following: \n" +
@@ -277,7 +281,7 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
             System.out.print("    Has already been Transformed?: ");
             if(email.getApplication() == null) {
                 System.out.println("-NO");
-                Optional<Application> response = applicationFromEmail(email);
+                Optional<Application> response = applicationFromEmailII(email);
                 if(response!= null) {
                     //applicasionService.postApplication(response.get());
                 }
@@ -288,6 +292,99 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
 
         return new ResponseEntity<>(HttpStatus.OK);
 
+    }
+
+    public List<Choice> applicationFromEmail(Email email){
+        String from = email.getFromAddress();
+        String subject = email.getSubject();
+        String plainText = removeHtmlTags(email.getContent());
+        System.out.println(plainText);
+        String message = "Analyse this job application: /n"+
+                "from " + from + "/n" +
+                "subject " + subject + "/n" +
+                "email content" + plainText + "/n " +
+                "Create a JSON object with field names 'name', 'age', 'profession', 'title', 'phone', 'summary'/n" +
+                "assign Name of applicant to 'name' /n" +
+                "assign Age of applicant 'age'/n" +
+                "assign Profession 'profession'/n" +
+                "assign Title 'title'/n" +
+                "assign Phone number 'phone'/n" +
+                "assign a short summary of the applicants best qualities to 'summary'/n" +
+                "if nothing in the job application matches the criteria leave it empty";
+        List<Choice> lst = chatWithGPT(message);
+        return lst;
+    }
+
+    @Scheduled(fixedRate = 20000000)
+    public void autoSyncApplicants() {
+        syncApplicants();
+    }
+
+    public void syncApplicants() {
+        List<Email> emails = emailService.getEmails();
+
+        for (Email email : emails) {
+            int retryCount = 3;
+
+            while (retryCount > 0) {
+                try {
+                    List<Choice> choices = applicationFromEmail(email);
+
+                    Application application = parseEmail(choices);
+
+                    if (application != null) {
+                        application.setEmail(email);
+                        applicationService.postApplication(application);
+                    } else {
+                        System.out.println("Failed to parse email to Application");
+                    }
+                    break;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.out.println("Retrying due to parsing error. Retries left: " + retryCount);
+
+                    try {
+                        Thread.sleep(6000);
+                    } catch (InterruptedException interruptedException) {
+                        Thread.currentThread().interrupt();
+                    }
+
+                    retryCount--;
+                }
+            }
+        }
+    }
+    public Application parseEmail(List<Choice> list) {
+        String email = list.get(0).getMessage().getContent();
+        System.out.println("email.getContent" + email);
+        String jsonString = extractJson(email);
+        System.out.println("jsonString"+jsonString);
+        if (jsonString == null || jsonString.isEmpty()) {
+            System.out.println("No valid JSON content found. Skipping parsing.");
+            return null;
+        }
+        try {
+            return objectMapper.readValue(jsonString, Application.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    private String extractJson(String rawContent) {
+        int start = rawContent.indexOf('{');
+        int end = rawContent.lastIndexOf('}');
+
+        if (start != -1 && end != -1 && start < end) {
+            return rawContent.substring(start, end + 1);
+        }
+
+        return null;
+    }
+    public String removeHtmlTags(String htmlString) {
+        String[] parts = htmlString.split("<html>", 2);
+        String plainText = parts[0];
+
+        return plainText;
     }
 
 

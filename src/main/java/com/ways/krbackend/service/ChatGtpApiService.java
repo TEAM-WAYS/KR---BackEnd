@@ -17,7 +17,7 @@ public interface ChatGtpApiService {
 
     Optional<String> validateApplicationsLong(String inquiry, int noOfApplications);
 
-    Optional<Application> applicationFromEmail(Email email);
+    List<Choice> applicationFromEmail(Email email);
 
     ResponseEntity<Object> turnEmailIntoApplication();
 

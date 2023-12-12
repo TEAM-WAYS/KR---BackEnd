@@ -22,9 +22,8 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import java.util.Arrays;
 import java.util.Collections;
 
-
+@Configuration
 public class SecurityConfig {
-
         @Bean
         SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
             CsrfTokenRequestAttributeHandler requestHandler = new CsrfTokenRequestAttributeHandler();
