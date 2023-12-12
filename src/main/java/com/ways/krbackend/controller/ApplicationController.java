@@ -3,7 +3,7 @@ package com.ways.krbackend.controller;
 import com.ways.krbackend.DTO.ApplicationPoints;
 import com.ways.krbackend.DTO.ApplicationPointsTransfer;
 import com.ways.krbackend.model.Application;
-import com.ways.krbackend.service.ApplicasionService;
+import com.ways.krbackend.service.ApplicationService;
 import com.ways.krbackend.service.ChatGtpApiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,7 +25,7 @@ public class ApplicationController {
 
     @PostMapping("/application")
     public ResponseEntity<?> postApplication(@RequestBody Application application){
-        Optional<Application> response = applicasionService.postApplication(application);
+        Optional<Application> response = applicationService.postApplication(application);
         if(response.isPresent()){
             return ResponseEntity.status(HttpStatus.OK).body("saved");
         }else {

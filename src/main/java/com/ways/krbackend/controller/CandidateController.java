@@ -3,13 +3,11 @@ import com.ways.krbackend.service.CandidateService;
 import com.ways.krbackend.model.Candidate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-    @RestController
+@RestController
     @RequestMapping("/candidate")
     public class CandidateController {
 
@@ -17,15 +15,15 @@ import java.util.List;
         private CandidateService candidateService;
 
         @GetMapping("/list")
-        public String listCandidates(Model model) {
+        public ResponseEntity<List<Candidate>> getAllCandidates() {
             List<Candidate> candidates = candidateService.getAllCandidates();
-            model.addAttribute("candidates", candidates);
-            return "list-candidates";
+            return ResponseEntity.ok(candidates);
         }
-        @GetMapping("/search")
-        public String showSearchForm(Model model) {
-            model.addAttribute("candidates", new ArrayList<>());
-            return "list-candidates";
+
+        @GetMapping("/{candidateId}/search")
+        public ResponseEntity<Candidate> getCandidateById(@PathVariable Long candidateId) {
+            Optional<Candidate> candidate = candidateService.getCandidateById(candidateId);
+            return candidate.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
         }
         @GetMapping("/favorites")
         public ResponseEntity<List<Candidate>> getFavoriteCandidates() {
@@ -38,5 +36,28 @@ import java.util.List;
             candidateService.addToFavorites(candidateId);
             return ResponseEntity.ok("Candidate added to favorites successfully.");
         }
+        @PostMapping("/{candidateId}/move-to-employee")
+        public ResponseEntity<String> moveToEmployee(@PathVariable Long candidateId) {
+            candidateService.moveCandidateToEmployee(candidateId);
+            return ResponseEntity.ok("Candidate moved to Employee list successfully.");
+        }
+
+        @DeleteMapping("/{candidateId}")
+        public ResponseEntity<String> deleteCandidate(@PathVariable Long candidateId) {
+            candidateService.deleteCandidate(candidateId);
+            return ResponseEntity.ok("Candidate deleted successfully.");
+        }
+        @GetMapping("/employees")
+        public ResponseEntity<List<Candidate>> getEmployeeCandidates() {
+            List<Candidate> employeeCandidates = candidateService.getEmployeeCandidates();
+            return ResponseEntity.ok(employeeCandidates);
+        }
+
+        @GetMapping("/employees-with-hired-date")
+        public ResponseEntity<List<Candidate>> getEmployeesWithHiredDate() {
+            List<Candidate> employeesWithHiredDate = candidateService.getEmployeesWithHiredDate();
+            return ResponseEntity.ok(employeesWithHiredDate);
+        }
     }
+
 

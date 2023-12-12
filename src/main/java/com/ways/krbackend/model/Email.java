@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import java.util.Date;
 
 @Entity
-public class email {
+public class Email {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;
@@ -14,9 +14,18 @@ public class email {
     private Date sentDate;
     @Column(columnDefinition = "LONGTEXT")
     private String content;
+    @Column(name = "attachments", columnDefinition = "BLOB")
+    private byte[] attachments;
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "email")
     private Application application;
 
+    public byte[] getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(byte[] attachments) {
+        this.attachments = attachments;
+    }
     public String getSubject() {
         return subject;
     }

@@ -1,5 +1,7 @@
 package com.ways.krbackend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 @Entity
@@ -8,14 +10,16 @@ public class Application {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String name;
+    @Column(columnDefinition = "LONGTEXT")
     private String summary;
     private int age;
-    private int phone;
+    private String phone;
     private String profession;
     private String title;
+    @JsonIgnore
     @OneToOne
-    @JoinColumn(name="email", referencedColumnName = "id")
-    email email;
+    @JoinColumn(name = "email", referencedColumnName = "id")
+    private Email email;
 
 
     public int getId() {
@@ -50,11 +54,11 @@ public class Application {
         this.age = age;
     }
 
-    public int getPhone() {
+    public String getPhone() {
         return phone;
     }
 
-    public void setPhone(int phoneNumber) {
+    public void setPhone(String phoneNumber) {
         this.phone = phoneNumber;
     }
 
@@ -74,11 +78,11 @@ public class Application {
         this.title = title;
     }
 
-    public com.ways.krbackend.model.email getEmail() {
+    public Email getEmail() {
         return email;
     }
 
-    public void setEmail(com.ways.krbackend.model.email email) {
+    public void setEmail(Email email) {
         this.email = email;
     }
 }

@@ -9,6 +9,7 @@ import java.util.Optional;
 public interface CandidateRepository extends JpaRepository<Candidate, Long> {
 
     Optional<Candidate> findById(Long id);
-
     List<Candidate> findByIsFavoriteTrue();
+    List<Candidate> findByIsEmployeeTrue();
+    List<Candidate> findByHiredDateNotNull();
 }
