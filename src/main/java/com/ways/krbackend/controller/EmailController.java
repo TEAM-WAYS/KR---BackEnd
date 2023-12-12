@@ -1,5 +1,6 @@
 package com.ways.krbackend.controller;
 
+import com.ways.krbackend.DTO.ApiResponse;
 import com.ways.krbackend.model.Email;
 import com.ways.krbackend.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +22,13 @@ public class EmailController {
     }
 
     @GetMapping("/emails/sync")
-    public void syncEmail() {
-        emailService.syncEmails();
+    public ResponseEntity<ApiResponse> syncEmail() {
+        boolean synced = emailService.syncEmails();
+        if (synced) {
+            return new ResponseEntity<>(new ApiResponse("email synced"), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @DeleteMapping("/emails/delete/{id}")

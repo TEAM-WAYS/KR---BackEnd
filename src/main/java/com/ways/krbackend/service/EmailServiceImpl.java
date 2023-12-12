@@ -59,7 +59,7 @@ public class EmailServiceImpl implements EmailService {
         syncEmails();
     }
     @Override
-    public void syncEmails() {
+    public boolean syncEmails() {
         try {
             List<Email> remoteEmails = fetchEmailsFromRemote();
 
@@ -74,10 +74,11 @@ public class EmailServiceImpl implements EmailService {
                 } else {
                     emailRepository.save(remoteEmail);
                 }
-            }
+            } return true;
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return false;
     }
 
     private byte[] getAttachmentsFromMessage(Message message) throws Exception {
