@@ -50,6 +50,7 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
     }
 
 
+    @Override
     public List<Choice> chatWithGPT(String message) {
         ChatRequest chatRequest = new ChatRequest();
         chatRequest.setModel("gpt-3.5-turbo");

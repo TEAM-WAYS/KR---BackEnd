@@ -1,6 +1,7 @@
 package com.ways.krbackend.service;
 
 import com.ways.krbackend.DTO.ApplicationPointsTransfer;
+import com.ways.krbackend.DTO.Choice;
 import com.ways.krbackend.model.Application;
 import com.ways.krbackend.model.Email;
 
@@ -19,4 +20,6 @@ public interface ChatGtpApiService {
     Optional<Application> applicationFromEmail(Email email);
 
     ResponseEntity<Object> turnEmailIntoApplication();
+
+    List<Choice> chatWithGPT(String message);
 }
