@@ -34,9 +34,17 @@ public class ApplicationController {
         }
     }
 
-    @GetMapping("/application/search/{inq}")
-    public ResponseEntity<List<ApplicationPointsTransfer>> searchByInquiry(@PathVariable String inq){
+    @GetMapping ("/application/search")
+    public ResponseEntity<List<ApplicationPointsTransfer>> searchByInquiry(){
         System.out.println("\n ##--endpoint application/search running--## \n");
+        String inq = "Robot Engineer wanted at Tech Solutions A/S! Join our dynamic team, \n" +
+                "leveraging your expertise in robotics, programming (C++, Python), \n" +
+                "and project management. Contribute to cutting-edge solutions, \n" +
+                "troubleshooting complex systems, and driving innovation. \n" +
+                "Apply your skills to shape the future of automation. Apply now!";
+
+
+        System.out.println("inq at endpoint: "+inq);
         Optional<List<ApplicationPointsTransfer>> answer = chatGtpApiService.validateApplicationsLong(inq,10);
         System.out.println("answer : " + answer);
         System.out.println("answer get : " + answer.get());
