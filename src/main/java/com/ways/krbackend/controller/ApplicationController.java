@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -73,14 +74,18 @@ public class ApplicationController {
         String jsonString = "[{name: john, age: 32},{name: joe, age: 31}]";
         return jsonString;
     }
-    @GetMapping("/application/testObject") // VIRKER !!
-    public ResponseEntity<Application> testObject(){
+    @GetMapping("/application/testObjectList") // VIRKER !!
+    public ResponseEntity<List<Application>> testObjectList(){
+        List<Application> applicationList = new ArrayList<>();
         Application application = new Application();
         application.setId(1);
         application.setAge(42);
         application.setName("Per");
         application.setSummary("Super duper");
-        return new ResponseEntity<>(application, HttpStatus.OK);
+        applicationList.add(application);
+        applicationList.add(application);
+        applicationList.add(application);
+        return new ResponseEntity<>(applicationList, HttpStatus.OK);
     }
 
     @GetMapping("/application/testString") //Virker !!

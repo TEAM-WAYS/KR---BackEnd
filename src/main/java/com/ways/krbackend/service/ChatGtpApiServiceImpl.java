@@ -167,11 +167,15 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
         int applicationId = 0;
         int points = 0;
         String reason = "";
+        String key ="";
         int objectStart = 0;
         int objectEnd = 0;
+        int kommaPossition = 0;
+        int colonPossition =0;
 
-        boolean hasObjectStart = false, hasObjectEnd = false;
-        String object = "";
+
+        boolean hasObjectStart = false, hasObjectEnd = false,hasColon = false, hasKomma= false;
+
 
 
         for(int i =0; i<chatAnswer.length();i++){
@@ -185,24 +189,41 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
                 hasObjectEnd =true;
 
             }
-            if(hasObjectStart&&hasObjectEnd) {
-                object= chatAnswer.substring(objectStart, objectEnd);
-                String[] attribute = object.split(",");
-                String[] keyValue = {};
-                for (String s : attribute){
-                    keyValue = s.split(":");
+            if(chatAnswer.charAt(i) == '{'||chatAnswer.charAt(i) == ',') {
+                kommaPossition=i;
+                hasKomma = true;
+
+            }
+            if(chatAnswer.charAt(i) == ':') {
+               colonPossition=i;
+                hasColon = true;
+            }
+
+            if(hasObjectStart&&hasObjectEnd && objectStart<objectEnd ) {
+                if(hasKomma&&hasColon) {
+                    if(kommaPossition<colonPossition) {
+                        key = chatAnswer.substring(kommaPossition, colonPossition);
+                        hasKomma = false;
+                    }else {
+                        if (key.contains("applicationId")) {
+                            applicationId = Integer.parseInt(chatAnswer.substring( colonPossition+ 1,kommaPossition ).replaceAll("[^\\d]", ""));
+                            hasColon = false;
+                        } else if(key.contains("points")) {
+                            points = Integer.parseInt(chatAnswer.substring( colonPossition+ 1,kommaPossition ).replaceAll("[^\\d]", ""));
+                            hasColon = false;
+                        }else {
+                            reason = chatAnswer.substring(colonPossition+ 1,kommaPossition);
+                            pointList.add(new ApplicationPointsTransfer(applicationId,points,reason));
+                            hasKomma = false;
+                            hasColon = false;
+                            hasObjectStart = false;
+                            hasObjectEnd = false;
+                        }
+
+
+                    }
                 }
-                if(keyValue.length != 6) {
-                    System.out.println("Unexpected number of entities ");
-                }
-                try {
-                    applicationId=Integer.parseInt(keyValue[1]);
-                    points=Integer.parseInt(keyValue[3]);
-                }catch (NumberFormatException e){
-                    throw new NumberFormatException("cant parse String to int");
-                }
-                reason=keyValue[5];
-                pointList.add(new ApplicationPointsTransfer(applicationId,points,reason));
+
             }
 
         }
@@ -227,11 +248,16 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
         System.out.println("Message for for ChatGPT: \n"+message );
         List<Choice> lst = chatWithGPT(message);
         System.out.println("pure answer: "+lst.get(0).getMessage().getContent());
-        String answer = extractJsonII(lst.get(0).getMessage().getContent());
-        System.out.println("Response from GTP clean: \n "+answer);
+        String answer = lst.get(0).getMessage().getContent();
 
+        System.out.println("Response from GTP clean: \n ");
+        for(ApplicationPointsTransfer a : parseToDTO(answer)){
+            System.out.println("id: "+a.getApplicationId());
+            System.out.println("points: : "+a.getPoints());
+            System.out.println("reason: "+a.getReason());
+        }
 
-    return Optional.of(parseToDTO(answer));
+        return Optional.of(parseToDTO(answer));
     }
 
 
