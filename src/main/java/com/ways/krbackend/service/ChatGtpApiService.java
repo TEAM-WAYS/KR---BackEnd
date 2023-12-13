@@ -15,6 +15,8 @@ public interface ChatGtpApiService {
 
     List<Application> validateApplicationsQuick(String inquiry, int noOfApplications);
 
+    List<ApplicationPointsTransfer> parseToDTO(String chatAnswer);
+
     Optional<List<ApplicationPointsTransfer>> validateApplicationsLong(String inquiry, int noOfApplications);
 
     List<Choice> applicationFromEmail(Email email);

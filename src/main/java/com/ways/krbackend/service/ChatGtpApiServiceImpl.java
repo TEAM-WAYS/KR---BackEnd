@@ -32,6 +32,7 @@ import static aj.org.objectweb.asm.Type.getType;
 
 @Component
 public class ChatGtpApiServiceImpl implements ChatGtpApiService{
+
     @Value("${spring.ai.bearer}")
     private String gtpApiKey;
     /*@Value("${spring.ai.bearer}")
@@ -162,7 +163,8 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
 
     }
 
-    List<ApplicationPointsTransfer> parseToDTO(String chatAnswer){
+    @Override
+    public List<ApplicationPointsTransfer> parseToDTO(String chatAnswer){
         List<ApplicationPointsTransfer> pointList = new ArrayList();
         int applicationId = 0;
         int points = 0;
@@ -182,33 +184,42 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
             if(chatAnswer.charAt(i) == '{') {
                 objectStart=i;
                 hasObjectStart = true;
+                hasKomma = false;
+                hasColon = false;
+                hasObjectEnd = false;
             }
 
             if(chatAnswer.charAt(i) == '}') {
                 objectEnd=i;
                 hasObjectEnd =true;
+                hasObjectStart = false;
+                hasKomma = false;
+                hasColon = false;
 
             }
-            if(chatAnswer.charAt(i) == '{'||chatAnswer.charAt(i) == ',') {
+            if((chatAnswer.charAt(i) == '{'||chatAnswer.charAt(i) == ',')&& hasObjectStart) {
                 kommaPossition=i;
                 hasKomma = true;
 
             }
-            if(chatAnswer.charAt(i) == ':') {
+            if(chatAnswer.charAt(i) == ':'&& hasObjectStart) {
                colonPossition=i;
                 hasColon = true;
             }
 
-            if(hasObjectStart&&hasObjectEnd && objectStart<objectEnd ) {
+            if(hasObjectStart ) {
                 if(hasKomma&&hasColon) {
                     if(kommaPossition<colonPossition) {
+                        System.out.println("key :"+key);
                         key = chatAnswer.substring(kommaPossition, colonPossition);
                         hasKomma = false;
                     }else {
                         if (key.contains("applicationId")) {
+                            System.out.println("id before parsing to int : "+ chatAnswer.substring( colonPossition+ 1,kommaPossition ) );
                             applicationId = Integer.parseInt(chatAnswer.substring( colonPossition+ 1,kommaPossition ).replaceAll("[^\\d]", ""));
                             hasColon = false;
                         } else if(key.contains("points")) {
+                            System.out.println("points before parsing to int : "+ chatAnswer.substring( colonPossition+ 1,kommaPossition ) );
                             points = Integer.parseInt(chatAnswer.substring( colonPossition+ 1,kommaPossition ).replaceAll("[^\\d]", ""));
                             hasColon = false;
                         }else {
