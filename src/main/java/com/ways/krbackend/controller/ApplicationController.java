@@ -50,19 +50,37 @@ public class ApplicationController {
         return  null;
     }
 
-    @GetMapping("/application/testConnection")
+    @GetMapping("/application/testConnection") // VIRKER IKKE
     public String testConnection(){
         return "der er hul igennem";
     }
-    @GetMapping("/application/testJSON")
+    @GetMapping("/application/testJSON") // VIRKER IKKE
     public String testJSON(){
         String jsonString = "{name: john, age: 32}";
         return jsonString;
     }
-    @GetMapping("/application/testJSONArray")
+    @GetMapping("/application/testJSONArray") // VIRKER IKKE
     public String testJSONArray(){
         String jsonString = "[{name: john, age: 32},{name: joe, age: 31}]";
         return jsonString;
     }
+    @GetMapping("/application/testObject") // VIRKER !!
+    public ResponseEntity<Application> testObject(){
+        Application application = new Application();
+        application.setId(1);
+        application.setAge(42);
+        application.setName("Per");
+        application.setSummary("Super duper");
+        return new ResponseEntity<>(application, HttpStatus.OK);
+    }
+
+    @GetMapping("/application/testString")
+    public ResponseEntity<String> testString(){
+        String jsonString = "[{name: john, age: 32},{name: joe, age: 31}]";
+        return new ResponseEntity<>(jsonString, HttpStatus.OK);
+    }
+
+
+
 
 }
