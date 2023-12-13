@@ -15,7 +15,7 @@ public interface ChatGtpApiService {
 
     List<Application> validateApplicationsQuick(String inquiry, int noOfApplications);
 
-    Optional<String> validateApplicationsLong(String inquiry, int noOfApplications);
+    Optional<List<ApplicationPointsTransfer>> validateApplicationsLong(String inquiry, int noOfApplications);
 
     List<Choice> applicationFromEmail(Email email);
 

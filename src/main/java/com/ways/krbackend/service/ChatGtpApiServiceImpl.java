@@ -132,9 +132,7 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
         int start = rawContent.indexOf('[');
         int end = rawContent.lastIndexOf(']');
 
-        /*if (start != -1 && end != -1 && start < end) {
-            return rawContent.substring(start, end + 1);
-        }else{*/
+
             boolean hasStart = false, hasEnd = false;
             String newString ="[";
 
@@ -162,14 +160,57 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
                 return null;
             }
 
-        //}
+    }
+
+    List<ApplicationPointsTransfer> parseToDTO(String chatAnswer){
+        List<ApplicationPointsTransfer> pointList = new ArrayList();
+        int applicationId = 0;
+        int points = 0;
+        String reason = "";
+        int objectStart = 0;
+        int objectEnd = 0;
+
+        boolean hasObjectStart = false, hasObjectEnd = false;
+        String object = "";
 
 
+        for(int i =0; i<chatAnswer.length();i++){
+            if(chatAnswer.charAt(i) == '{') {
+                objectStart=i;
+                hasObjectStart = true;
+            }
 
+            if(chatAnswer.charAt(i) == '}') {
+                objectEnd=i;
+                hasObjectEnd =true;
+
+            }
+            if(hasObjectStart&&hasObjectEnd) {
+                object= chatAnswer.substring(objectStart, objectEnd);
+                String[] attribute = object.split(",");
+                String[] keyValue = {};
+                for (String s : attribute){
+                    keyValue = s.split(":");
+                }
+                if(keyValue.length != 6) {
+                    System.out.println("Unexpected number of entities ");
+                }
+                try {
+                    applicationId=Integer.parseInt(keyValue[1]);
+                    points=Integer.parseInt(keyValue[3]);
+                }catch (NumberFormatException e){
+                    throw new NumberFormatException("cant parse String to int");
+                }
+                reason=keyValue[5];
+                pointList.add(new ApplicationPointsTransfer(applicationId,points,reason));
+            }
+
+        }
+     return pointList;
     }
 
     @Override
-    public Optional<String> validateApplicationsLong(String inquiry, int noOfApplications) {
+    public Optional<List<ApplicationPointsTransfer>> validateApplicationsLong(String inquiry, int noOfApplications) {
         System.out.println("\n ##--validateApplicationsLong running--## \n");
         String message = "Witch of the following candidates matches best to this inquiry: \n"+ inquiry+"\n Candidates: \n";
 
@@ -189,26 +230,8 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
         String answer = extractJsonII(lst.get(0).getMessage().getContent());
         System.out.println("Response from GTP clean: \n "+answer);
 
-/*
-        ObjectMapper objectMapper = new ObjectMapper();
 
-        try {
-            System.out.println("Trying to Parse response to a list of DTO");
-            //List<ApplicationPointsTransfer> applicationList = objectMapper.readValue(answer, new TypeReference<List<ApplicationPointsTransfer>>() {});
-            List<ApplicationPointsTransfer> applicationList = Arrays.asList(objectMapper.readValue(answer, ApplicationPointsTransfer[].class));
-            if(!applicationList.isEmpty()){
-                System.out.println("## Parsing successful, returning to frontend");
-                return Optional.of(applicationList);
-            }
-
-        }catch (Exception e){
-            System.out.println("#####could not Parse Answer to DTO");
-        }*/
-
-
-
-
-    return Optional.of(answer);
+    return Optional.of(parseToDTO(answer));
     }
 
 

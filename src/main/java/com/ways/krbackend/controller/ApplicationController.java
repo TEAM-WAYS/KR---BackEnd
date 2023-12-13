@@ -1,5 +1,6 @@
 package com.ways.krbackend.controller;
 
+import com.google.api.client.json.Json;
 import com.ways.krbackend.DTO.ApplicationPoints;
 import com.ways.krbackend.DTO.ApplicationPointsTransfer;
 import com.ways.krbackend.model.Application;
@@ -33,21 +34,21 @@ public class ApplicationController {
         }
     }
 
-    @GetMapping("/application/search")
-    public String searchByInquiry(@RequestBody String inq){
+    @GetMapping("/application/search/{inq}")
+    public ResponseEntity<List<ApplicationPointsTransfer>> searchByInquiry(@PathVariable String inq){
         System.out.println("\n ##--endpoint application/search running--## \n");
-        Optional<String> answer = chatGtpApiService.validateApplicationsLong(inq,10);
+        Optional<List<ApplicationPointsTransfer>> answer = chatGtpApiService.validateApplicationsLong(inq,10);
         System.out.println("answer : " + answer);
         System.out.println("answer get : " + answer.get());
         if(answer.isPresent()){
             System.out.println("\n ##--endpoint application/search success--## \n");
             System.out.println(" from endpoint returning the following: \n"+answer.get());
-            return answer.get();
+            return new ResponseEntity<>(answer.get(),HttpStatus.OK);
             //return ResponseEntity.status(HttpStatus.OK).body(answer.get());
         }
         System.out.println("\n ##--endpoint application/search NOT success !!! --## \n");
         //return ResponseEntity.status(HttpStatus.NOT_FOUND).body(answer.get());
-        return  null;
+        return new ResponseEntity<>(answer.get(),HttpStatus.NOT_FOUND);
     }
 
     @GetMapping("/application/testConnection") // VIRKER IKKE
@@ -74,9 +75,11 @@ public class ApplicationController {
         return new ResponseEntity<>(application, HttpStatus.OK);
     }
 
-    @GetMapping("/application/testString")
+    @GetMapping("/application/testString") //Virker !!
     public ResponseEntity<String> testString(){
-        String jsonString = "[{name: john, age: 32},{name: joe, age: 31}]";
+        //String jsonString = "[{name: john, age: 32},{name: joe, age: 31}]";
+        String jsonString = "[{\"name\": \"john\", \"age\": 32},{\"name\": \"joe\", \"age\": 31}]";
+
         return new ResponseEntity<>(jsonString, HttpStatus.OK);
     }
 

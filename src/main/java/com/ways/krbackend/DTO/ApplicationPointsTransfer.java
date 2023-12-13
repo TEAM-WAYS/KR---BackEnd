@@ -8,8 +8,8 @@ public class ApplicationPointsTransfer {
     private String reason;
 
 
-    public ApplicationPointsTransfer(int appId, int points) {
-        this.applicationId = appId;
+    public ApplicationPointsTransfer(int applicationId, int points, String reason) {
+        this.applicationId = applicationId;
         this.points = points;
     }
 
