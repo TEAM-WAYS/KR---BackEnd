@@ -17,7 +17,7 @@ import java.util.Optional;
 public class ApplicationController {
 
     @Autowired
-    ApplicationService applicationService;
+    private ApplicationService applicationService;
 
     @Autowired
     private ChatGtpApiService chatGtpApiService;
@@ -33,11 +33,12 @@ public class ApplicationController {
         }
     }
 
-    @PostMapping("/application/search")
+    @GetMapping("/application/search")
     public String searchByInquiry(@RequestBody String inq){
         System.out.println("\n ##--endpoint application/search running--## \n");
         Optional<String> answer = chatGtpApiService.validateApplicationsLong(inq,10);
-
+        System.out.println("answer : " + answer);
+        System.out.println("answer get : " + answer.get());
         if(answer.isPresent()){
             System.out.println("\n ##--endpoint application/search success--## \n");
             System.out.println(" from endpoint returning the following: \n"+answer.get());
@@ -48,4 +49,20 @@ public class ApplicationController {
         //return ResponseEntity.status(HttpStatus.NOT_FOUND).body(answer.get());
         return  null;
     }
+
+    @GetMapping("/application/testConnection")
+    public String testConnection(){
+        return "der er hul igennem";
+    }
+    @GetMapping("/application/testJSON")
+    public String testJSON(){
+        String jsonString = "{name: john, age: 32}";
+        return jsonString;
+    }
+    @GetMapping("/application/testJSONArray")
+    public String testJSONArray(){
+        String jsonString = "[{name: john, age: 32},{name: joe, age: 31}]";
+        return jsonString;
+    }
+
 }
