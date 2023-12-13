@@ -46,7 +46,7 @@ public class SecurityConfig {
                     .addFilterBefore(new JWTTokenValidatorFilter(), BasicAuthenticationFilter.class)
                     .authorizeHttpRequests((requests)->requests
                             //add to whitelist for authenticated sites
-                            .requestMatchers("/application","/application/**","/application/**/**").authenticated()
+                            .requestMatchers("/application","/application/**","/application/search/**").authenticated()
                             .requestMatchers("/emails","/emails/**").authenticated()
                             .requestMatchers("/new-user","/login-user").permitAll()
                     )
