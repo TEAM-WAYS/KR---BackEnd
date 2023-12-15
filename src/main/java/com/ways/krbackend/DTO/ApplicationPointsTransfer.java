@@ -1,24 +1,23 @@
 package com.ways.krbackend.DTO;
 
-import com.ways.krbackend.model.Application;
-
 public class ApplicationPointsTransfer {
-    private int applicationId;
+    private int id;
     private int points;
     private String reason;
 
 
     public ApplicationPointsTransfer(int applicationId, int points, String reason) {
-        this.applicationId = applicationId;
+        this.id = applicationId;
         this.points = points;
+        this.reason = reason;
     }
 
-    public int getApplicationId() {
-        return applicationId;
+    public int getId() {
+        return id;
     }
 
-    public void setApplicationId(int applicationId) {
-        this.applicationId = applicationId;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getPoints() {

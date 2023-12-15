@@ -92,7 +92,7 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
 
         System.out.println("\n ##-- from chatGPT: "+lst.get(0).getMessage().getContent()+" --## \n");
 
-        String[] wordList = lst.get(0).getMessage().toString().split(" ");
+        String[] wordList = lst.get(0).getMessage().getContent().split(" ");
         List<ApplicationPoints> applPointsList = new ArrayList<>() ;
 
 
@@ -125,7 +125,7 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
             }
             i++;
         }
-        System.out.println("/n ##--validateApplicationsQuick Success--## /n");
+        System.out.println("\n ##--validateApplicationsQuick Success--## \n");
         return apHighscore;
     }
 
@@ -165,80 +165,99 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
 
     @Override
     public List<ApplicationPointsTransfer> parseToDTO(String chatAnswer){
+        chatAnswer = chatAnswer.replaceAll("\"", "");
+        System.out.println("##--in parsToDTO--##");
         List<ApplicationPointsTransfer> pointList = new ArrayList();
         int applicationId = 0;
         int points = 0;
         String reason = "";
         String key ="";
+        String object ="";
         int objectStart = 0;
         int objectEnd = 0;
         int kommaPossition = 0;
         int colonPossition =0;
 
-
         boolean hasObjectStart = false, hasObjectEnd = false,hasColon = false, hasKomma= false;
-
-
 
         for(int i =0; i<chatAnswer.length();i++){
             if(chatAnswer.charAt(i) == '{') {
                 objectStart=i;
                 hasObjectStart = true;
-                hasKomma = false;
-                hasColon = false;
-                hasObjectEnd = false;
             }
 
             if(chatAnswer.charAt(i) == '}') {
                 objectEnd=i;
                 hasObjectEnd =true;
-                hasObjectStart = false;
+            }
+
+            if(hasObjectStart && hasObjectEnd && objectStart<objectEnd ) {
+                System.out.println("found object : ");
+                object = chatAnswer.substring(objectStart,objectEnd+1);
+                System.out.println(object);
+
                 hasKomma = false;
                 hasColon = false;
 
-            }
-            if((chatAnswer.charAt(i) == '{'||chatAnswer.charAt(i) == ',')&& hasObjectStart) {
-                kommaPossition=i;
-                hasKomma = true;
+                for(int j = 0; j<object.length(); j++) {
+                    //System.out.println(" loop j: "+j);
 
-            }
-            if(chatAnswer.charAt(i) == ':'&& hasObjectStart) {
-               colonPossition=i;
-                hasColon = true;
-            }
-
-            if(hasObjectStart ) {
-                if(hasKomma&&hasColon) {
-                    if(kommaPossition<colonPossition) {
-                        System.out.println("key :"+key);
-                        key = chatAnswer.substring(kommaPossition, colonPossition);
-                        hasKomma = false;
-                    }else {
-                        if (key.contains("applicationId")) {
-                            System.out.println("id before parsing to int : "+ chatAnswer.substring( colonPossition+ 1,kommaPossition ) );
-                            applicationId = Integer.parseInt(chatAnswer.substring( colonPossition+ 1,kommaPossition ).replaceAll("[^\\d]", ""));
-                            hasColon = false;
-                        } else if(key.contains("points")) {
-                            System.out.println("points before parsing to int : "+ chatAnswer.substring( colonPossition+ 1,kommaPossition ) );
-                            points = Integer.parseInt(chatAnswer.substring( colonPossition+ 1,kommaPossition ).replaceAll("[^\\d]", ""));
-                            hasColon = false;
-                        }else {
-                            reason = chatAnswer.substring(colonPossition+ 1,kommaPossition);
-                            pointList.add(new ApplicationPointsTransfer(applicationId,points,reason));
-                            hasKomma = false;
-                            hasColon = false;
-                            hasObjectStart = false;
-                            hasObjectEnd = false;
-                        }
-
+                    if(object.charAt(j) == ','||object.charAt(j) == '{'||object.charAt(j) == '}') {
+                        System.out.println("found ','");
+                        kommaPossition=j;
+                        hasKomma = true;
 
                     }
-                }
+                    if(object.charAt(j) == ':') {
+                        System.out.println("found ':'");
+                        colonPossition=j;
+                        hasColon = true;
+                    }
 
+                    if (hasKomma && hasColon) {
+                        System.out.println();
+                        if (kommaPossition < colonPossition) {
+                            System.out.println("','before':' => Is Key");
+                            key = object.substring(kommaPossition+1, colonPossition);
+                            System.out.println("key :" + key);
+                            hasKomma = false;
+                        } else {
+
+                            System.out.println("':'before','=> Is Value");
+                            if (key.contains("applicationId")) {
+                                System.out.println("id before parsing to int : " + object.substring(colonPossition + 1, kommaPossition));
+                                applicationId = Integer.parseInt(object.substring(colonPossition + 1, kommaPossition).replaceAll("[^\\d]", ""));
+                                System.out.println("Id: "+ applicationId);
+
+                            } else if (key.contains("points")) {
+                                System.out.println("points before parsing to int : " + object.substring(colonPossition + 1, kommaPossition));
+                                points = Integer.parseInt(object.substring(colonPossition + 1, kommaPossition).replaceAll("[^\\d]", ""));
+                                System.out.println("points: "+points);
+
+                            } else {
+                                reason = object.substring(colonPossition + 1, object.length()-1);
+                                System.out.println("reason: "+reason);
+
+
+                            }
+                            hasColon = false;
+
+                        }
+                    }
+
+
+                    //in object string loop
+                }
+                pointList.add(new ApplicationPointsTransfer(applicationId, points, reason));
+                hasObjectEnd = false;
+                hasObjectStart = false;
+                //in object
             }
 
+
+            // in string loop
         }
-     return pointList;
+        return pointList;
     }
 
     @Override
@@ -263,7 +282,7 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
 
         System.out.println("Response from GTP clean: \n ");
         for(ApplicationPointsTransfer a : parseToDTO(answer)){
-            System.out.println("id: "+a.getApplicationId());
+            System.out.println("id: "+a.getId());
             System.out.println("points: : "+a.getPoints());
             System.out.println("reason: "+a.getReason());
         }

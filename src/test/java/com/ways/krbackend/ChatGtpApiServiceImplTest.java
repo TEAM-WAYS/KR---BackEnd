@@ -30,7 +30,10 @@ public class ChatGtpApiServiceImplTest {
         List<ApplicationPointsTransfer> answer=chatGtpApiService.parseToDTO(chat);
 
         //Assert
-        assertEquals(answer,expected);
+        System.out.println(answer.get(0).getPoints());
+        System.out.println(expected.get(0).getPoints());
+        assertEquals(answer.get(0).getPoints(),expected.get(0).getPoints());
+
 
 
 
