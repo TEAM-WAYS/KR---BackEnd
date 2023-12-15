@@ -226,12 +226,20 @@ public class ChatGtpApiServiceImpl implements ChatGtpApiService{
                             System.out.println("':'before','=> Is Value");
                             if (key.contains("applicationId")) {
                                 System.out.println("id before parsing to int : " + object.substring(colonPossition + 1, kommaPossition));
-                                applicationId = Integer.parseInt(object.substring(colonPossition + 1, kommaPossition).replaceAll("[^\\d]", ""));
+                                try {
+                                    applicationId = Integer.parseInt(object.substring(colonPossition + 1, kommaPossition).replaceAll("[^\\d]", ""));
+                                }catch (NumberFormatException e){
+                                    applicationId = 0;
+                                }
                                 System.out.println("Id: "+ applicationId);
 
                             } else if (key.contains("points")) {
                                 System.out.println("points before parsing to int : " + object.substring(colonPossition + 1, kommaPossition));
-                                points = Integer.parseInt(object.substring(colonPossition + 1, kommaPossition).replaceAll("[^\\d]", ""));
+                                try {
+                                    points = Integer.parseInt(object.substring(colonPossition + 1, kommaPossition).replaceAll("[^\\d]", ""));
+                                }catch (NumberFormatException e){
+                                    points = 0;
+                                }
                                 System.out.println("points: "+points);
 
                             } else {
