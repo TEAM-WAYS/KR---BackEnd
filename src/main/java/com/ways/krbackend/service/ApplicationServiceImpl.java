@@ -30,9 +30,16 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
+    public Optional<Application> getApplicationById(int appId) {
+        return Optional.of(applicationRepository.getApplicationById(appId));
+    }
+
+    @Override
     public List<Application> getApplications() {
         return applicationRepository.findAll();
     }
+
+
 
 
 }

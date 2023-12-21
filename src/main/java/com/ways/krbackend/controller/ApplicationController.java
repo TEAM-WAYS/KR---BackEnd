@@ -75,16 +75,12 @@ public class ApplicationController {
         return jsonString;
     }
     @GetMapping("/application/testObjectList") // VIRKER !!
-    public ResponseEntity<List<Application>> testObjectList(){
-        List<Application> applicationList = new ArrayList<>();
-        Application application = new Application();
-        application.setId(1);
-        application.setAge(42);
-        application.setName("Per");
-        application.setSummary("Super duper");
-        applicationList.add(application);
-        applicationList.add(application);
-        applicationList.add(application);
+    public ResponseEntity<List<ApplicationPointsTransfer>> testObjectList(){
+        List<ApplicationPointsTransfer> applicationList = new ArrayList<>();
+        applicationList.add(new ApplicationPointsTransfer(1,100,"bare fordi et"));
+        applicationList.add(new ApplicationPointsTransfer(2,10,"bare fordi noget"));
+        applicationList.add(new ApplicationPointsTransfer(3,10,"bare fordi noget andet"));
+
         return new ResponseEntity<>(applicationList, HttpStatus.OK);
     }
 
@@ -95,6 +91,18 @@ public class ApplicationController {
 
         return new ResponseEntity<>(jsonString, HttpStatus.OK);
     }
+
+    @GetMapping("/application/id/{appId}")
+    public ResponseEntity<Application> applicationById(@PathVariable int appId){
+
+        Optional<Application> answer = applicationService.getApplicationById(appId);
+        if(answer.isPresent()){
+            return new ResponseEntity<>(answer.get(),HttpStatus.OK);
+        }else {
+            return new ResponseEntity<>(answer.get(),HttpStatus.NOT_FOUND);
+        }
+    }
+
 
 
 
